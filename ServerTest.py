@@ -43,18 +43,28 @@ def server_test_1(testResults):
     expectedResult = "200"
     response = serverResponse.decode().split(" ")
     testResults[0] = "PASS" if response[1] == expectedResult else "FAIL"
-    
 
-# Description: Send a request for notFound.html. File should not be found (404)
+# Description: Send a request for test.htm. Bad request because unknown file extension (400)
 def server_test_2(testResults):
     print("Executing test 2...")
+    request = ("GET /test.htm HTTP/1.1\r\n" + 
+                "Host: localhost:12000\r\n")
+    serverResponse = client_connection(request)
+    # validate response
+    expectedResult = "400"
+    response = serverResponse.decode().split(" ")
+    testResults[1] = "PASS" if response[1] == expectedResult else "FAIL"    
+
+# Description: Send a request for notFound.html. File should not be found (404)
+def server_test_3(testResults):
+    print("Executing test 3...")
     request = ("GET /notFound.html HTTP/1.1\r\n" + 
                 "Host: localhost:12000\r\n")
     serverResponse = client_connection(request)
     # validate response
     expectedResult = "404"
     response = serverResponse.decode().split(" ")
-    testResults[1] = "PASS" if response[1] == expectedResult else "FAIL"
+    testResults[2] = "PASS" if response[1] == expectedResult else "FAIL"
 
 
 # Description: Execute all test cases in a sequential order since the server
@@ -62,7 +72,7 @@ def server_test_2(testResults):
 def server_tests(testResults):
     server_test_1(testResults)
     server_test_2(testResults)
-
+    server_test_3(testResults)
 
 # Description: Run the server
 def run_server():
@@ -96,6 +106,7 @@ if __name__ == "__main__":
         print("\n#########################################")
         print("#              TEST RESULTS             #")
         print("#                                       #")
-        print("#\tTest 1:\t\t\t" + testResults[0] + "\t#")
-        print("#\tTest 2:\t\t\t" + testResults[1] + "\t#")
+        print("#\tTest 1 (200):\t\t" + testResults[0] + "\t#")
+        print("#\tTest 2 (400):\t\t" + testResults[1] + "\t#")
+        print("#\tTest 2 (404):\t\t" + testResults[2] + "\t#")
         print("#########################################\n")
