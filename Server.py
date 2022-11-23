@@ -9,6 +9,7 @@ from socket import *
 import os
 import time
 import HTTP
+import sys
 
 
 
@@ -17,7 +18,7 @@ import HTTP
 ###########
 SERVER_PORT = 12000
 BUFFER_SIZE = 1024
-TIMEOUT = 2 # seconds
+
 
 
 #############
@@ -28,6 +29,7 @@ TIMEOUT = 2 # seconds
 def handle_request(connectionSocket):
     request = connectionSocket.recv(BUFFER_SIZE).decode()  
     requestWords = request.split(" ")[0:3]
+    # print(request + "\n")
 
     if len(requestWords) > 1:
 
@@ -35,8 +37,9 @@ def handle_request(connectionSocket):
         filePath = requestWords[1][1:] if len(requestWords[1]) > 2 else requestWords[1] # remove the leading /
 
         if filePath != "favicon.ico":
-            print("Method: " + method)
-            print(" File path: " + filePath)
+            # print("Method: " + method)
+            # print(" File path: " + filePath)
+            # print(os.path.abspath(os.getcwd()))
             
             if method == "GET":
 
@@ -67,15 +70,21 @@ def start_server():
     # Server begins listening for incoming TCP connections
     serverSocket.listen(1)
     print ("The server is online...")
-
+    
+    
     while True:
         # Server waits on accept for incoming requests.
         # New socket created on return
-        connectionSocket, addr = serverSocket.accept()
-        handle_request(connectionSocket)
-
+        try:
+            connectionSocket, addr = serverSocket.accept()
+            handle_request(connectionSocket)
+        except KeyboardInterrupt:
+            print("Closing Server...")
+            serverSocket.close()
+            break
 
     
 ##################################
-print("Starting Server...")
-start_server()
+if __name__ == "__main__":
+    print("Starting Server...")
+    start_server()

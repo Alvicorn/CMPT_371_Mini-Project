@@ -7,6 +7,9 @@
 
 
 from datetime import datetime as dt
+import time
+
+TIMEOUT = 2 # seconds
 
 
 # Description: Generate the http response status line and header
