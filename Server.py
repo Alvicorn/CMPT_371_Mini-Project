@@ -2,6 +2,8 @@
 # CMPT 371: Mini-Project
 # Created On:  Nov 22, 2022
 # Last Modified On: Nov 22, 2022
+#
+# Description: Basic, singly-threaded web server that handles HTTP requests
 
 from socket import *
 import os
