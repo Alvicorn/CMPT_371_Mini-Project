@@ -11,73 +11,91 @@ import time
 from Server import start_server
 from socket import *
 
-TIMEOUT = 5 # second
+MAX_RUNTIME = 10 # second
 
 test1Result = "FAIL"
 
-# Description: Send a request for test.html. File should be found (200)
-def server_test_1(testResults):
-    request = ("GET /test.html HTTP/1.1\r\n" + 
-                "Host: localhost:12000\r\n")
 
+# Description: Create a connection with the server. Send the request and 
+#               return the server response
+def client_connection(request):
     # Specify Server Address
     serverName = 'localhost'
     serverPort = 12000
 
-    # Create TCP Socket for Client
+    # establish TCP connection to the server
     clientSocket = socket(AF_INET, SOCK_STREAM)
-
-    # Connect to TCP Server Socket
     clientSocket.connect((serverName,serverPort))
-
-    # Send! No need to specify Server Name and Server Port! Why?
     clientSocket.send(request.encode())
-    
-    # Read reply characters! No need to read address! Why?
     serverResponse = clientSocket.recv(1024)
-
-    # buffer to allow time for the server to close
-    time.sleep(1)
-
-    # Close the socket
+    time.sleep(1)     # buffer to allow time for the server to close
     clientSocket.close()
+    return serverResponse
 
+
+# Description: Send a request for test.html. File should be found (200)
+def server_test_1(testResults):
+    print("Executing test 1...")
+    request = ("GET /test.html HTTP/1.1\r\n" + 
+                "Host: localhost:12000\r\n")
+    serverResponse = client_connection(request)
     # validate response
     expectedResult = "200"
     response = serverResponse.decode().split(" ")
     testResults[0] = "PASS" if response[1] == expectedResult else "FAIL"
     
 
+# Description: Send a request for notFound.html. File should not be found (404)
+def server_test_2(testResults):
+    print("Executing test 2...")
+    request = ("GET /notFound.html HTTP/1.1\r\n" + 
+                "Host: localhost:12000\r\n")
+    serverResponse = client_connection(request)
+    # validate response
+    expectedResult = "404"
+    response = serverResponse.decode().split(" ")
+    testResults[1] = "PASS" if response[1] == expectedResult else "FAIL"
 
 
+# Description: Execute all test cases in a sequential order since the server
+#               is singly-threaded
+def server_tests(testResults):
+    server_test_1(testResults)
+    server_test_2(testResults)
 
+
+# Description: Run the server
 def run_server():
     start_server()
 
 
+
+
+
 if __name__ == "__main__":
     with Manager() as manager:
-        testResults = manager.dict()
+        testResults = manager.dict()   # dictionary of test case results
 
-        print("Executing tests... Please wait...")
+        print("Executing tests...")
         run = Process(target=run_server)
-        test1 = Process(target=server_test_1, args=(testResults,))
-        test1.start()
+        test = Process(target=server_tests, args=(testResults,))
+        
         run.start()
+        test.start()
+        
+        time.sleep(MAX_RUNTIME)
+        
+        if (test.is_alive()):
+            test.terminate()
 
-        test1Terminated = "NO"
-
-        time.sleep(TIMEOUT)
-        if (test1.is_alive()):
-            test1.terminate()
-            test1Terminated = "YES"
         run.terminate()
-        run.join()
+        
+        test.join()
         run.join()
 
-        print("#########################################")
+        print("\n#########################################")
         print("#              TEST RESULTS             #")
         print("#                                       #")
-        print("#\tTest 1 terminated?:\t" + test1Terminated + " \t#")
-        print("#\tTest 1 Complete?:\t" + testResults[0] + "\t#")
+        print("#\tTest 1:\t\t\t" + testResults[0] + "\t#")
+        print("#\tTest 2:\t\t\t" + testResults[1] + "\t#")
         print("#########################################\n")

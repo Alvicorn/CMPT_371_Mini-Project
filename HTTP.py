@@ -39,7 +39,6 @@ def http_header_response(status, contentLength=0, contentType="none"):
         header = header + "Content-Length: " + str(contentLength) + "\r\n"
         # append content type
         header = header + "Content-Type: " + contentType + "\r\n"
-    print(header)
     return header
 
 
