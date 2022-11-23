@@ -8,7 +8,7 @@ Create a simple web server using socket programming that follows the HTTP protoc
 
 Code | Message           | Done |
 -----|-------------------|------|
-200  | OK                | NO   |
+200  | OK                | Yes  |
 304  | Not Modified      | NO   |
 400  | Bad Request       | NO   |
 404  | Not Found         | NO   |
@@ -25,7 +25,7 @@ http://localhost:12000/test.html
 ```
 * **Expected Response:** OK
 
-* **Done:** No
+* **Done:** Yes
 * **Notes:** N/A
 
 #### <mark>304</mark>
