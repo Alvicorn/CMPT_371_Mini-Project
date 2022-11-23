@@ -33,7 +33,7 @@ Type the following into a web browser
 ```
 
 ```
-* **Expected Response:** Not Modified
+* **Expected Response:** Not Modified [cache]
 
 * **Done:** No
 * **Notes:** N/A
