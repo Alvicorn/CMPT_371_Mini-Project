@@ -11,7 +11,7 @@ Code | Message           | Done |
 200  | OK                | Yes  |
 304  | Not Modified      | NO   |
 400  | Bad Request       | NO   |
-404  | Not Found         | NO   |
+404  | Not Found         | Yes  |
 408  | Request Timed Out | NO   |
 
 
@@ -55,7 +55,7 @@ http://localhost:12000/notFound.html
 ```
 * **Expected Response:** Not Found
 
-* **Done:** No
+* **Done:** Yes
 * **Notes:** Do not make a file in the root directory named notFound.html
 
 

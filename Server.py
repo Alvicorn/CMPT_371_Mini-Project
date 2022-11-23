@@ -21,7 +21,7 @@ print ("The server is online")
 
 
 
-while True: # Loop forever
+while True: 
 
     # Server waits on accept for incoming requests.
     # New socket created on return
@@ -29,20 +29,22 @@ while True: # Loop forever
      
     # client request
     request = connectionSocket.recv(BUFFER_SIZE).decode()  
+    
     requestWords = request.split(" ")[0:3]
-    response = "HTTP/1.1 400 Not Found\n\n404 Not Found"
+    response = "HTTP/1.1 400 Not Found\n\n404 Not Found" # default response
     
     method = requestWords[0]
-    filePath = requestWords[1][1:] if len(requestWords[1]) > 2 else requestWords[1]
+    filePath = requestWords[1][1:] if len(requestWords[1]) > 2 else requestWords[1] # remove the leading /
     if filePath != "favicon.ico":
-        print("Method: " + method);
+
+        print("Method: " + method)
         print(" File path: " + filePath)
         
         if method == "GET":
             if len(filePath) > 1 and os.path.exists(filePath) == True: # 200
                 response = "HTTP/1.1 200 OK\n\n"
                 connectionSocket.send(response.encode())
-                # prase the file
+                # open file, read the file and send it
                 file = open(filePath)
                 data = file.read()
                 for i in range(0, len(data)):
