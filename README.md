@@ -1,6 +1,6 @@
 # Mini Project: Web & Proxy Web Server 
 
-***Server port is 12000 on localhost***
+***Server port is 12000***
 
 
 ## **Task 1: Implement the Web Server**
@@ -21,7 +21,7 @@ Note: Ensure the web server is running on port 12000 before testing
 #### <mark>200</mark>
 Type the following into a web browser
 ```
-http://localhost:12000/test.html
+http://IP_ADDRESS:12000/test.html
 ```
 * **Expected Response:** OK
 
@@ -51,7 +51,7 @@ Type the following into a web browser
 #### <mark>404</mark>
 Type the following into a web browser
 ```
-http://localhost:12000/notFound.html
+http://IP_ADDRESS:12000/notFound.html
 ```
 * **Expected Response:** Not Found
 

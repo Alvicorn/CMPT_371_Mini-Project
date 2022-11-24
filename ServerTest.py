@@ -10,6 +10,7 @@ import multiprocessing as mp
 import time
 from Server import start_server
 from socket import *
+import socket
 
 MAX_RUNTIME = 10 # second
 
@@ -20,11 +21,11 @@ test1Result = "FAIL"
 #               return the server response
 def client_connection(request):
     # Specify Server Address
-    serverName = 'localhost'
+    serverName = socket.gethostbyname(socket.gethostname())
     serverPort = 12000
 
     # establish TCP connection to the server
-    clientSocket = socket(AF_INET, SOCK_STREAM)
+    clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     clientSocket.connect((serverName,serverPort))
     clientSocket.send(request.encode())
     serverResponse = clientSocket.recv(1024)
@@ -87,8 +88,8 @@ if __name__ == "__main__":
         testResults = manager.dict()   # dictionary of test case results
 
         print("Executing tests...")
-        run = Process(target=run_server)
-        test = Process(target=server_tests, args=(testResults,))
+        run = Process(target=run_server) # process to run the server
+        test = Process(target=server_tests, args=(testResults,)) # process to execute test cases
         
         run.start()
         test.start()

@@ -5,7 +5,8 @@
 #
 # Description: Basic, singly-threaded web server that handles HTTP requests
 
-from socket import *
+# from socket import *
+import socket
 import os
 import time
 import HTTP
@@ -61,13 +62,13 @@ def handle_request(connectionSocket):
 
 # Description: Create the socket and listen for connections
 def start_server():
+
+    ip = socket.gethostbyname(socket.gethostname())
+
     # Create TCP welcoming socket
-    serverSocket = socket(AF_INET,SOCK_STREAM)
+    serverSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    serverSocket.bind((ip,SERVER_PORT))
 
-    # Bind the server port to the socket
-    serverSocket.bind(('',SERVER_PORT))
-
-    # Server begins listening for incoming TCP connections
     serverSocket.listen(1)
     print ("The server is online...")
     
