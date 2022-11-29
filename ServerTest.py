@@ -13,6 +13,8 @@ from socket import *
 import socket
 
 MAX_RUNTIME = 10 # second
+SERVER_NAME = socket.gethostbyname(socket.gethostname())
+SERVER_PORT = 12000
 
 test1Result = "FAIL"
 
@@ -20,13 +22,9 @@ test1Result = "FAIL"
 # Description: Create a connection with the server. Send the request and 
 #               return the server response
 def client_connection(request):
-    # Specify Server Address
-    serverName = socket.gethostbyname(socket.gethostname())
-    serverPort = 12000
-
     # establish TCP connection to the server
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    clientSocket.connect((serverName,serverPort))
+    clientSocket.connect((SERVER_NAME,SERVER_PORT))
     clientSocket.send(request.encode())
     serverResponse = clientSocket.recv(1024)
     time.sleep(1)     # buffer to allow time for the server to close
@@ -38,7 +36,7 @@ def client_connection(request):
 def server_test_1(testResults):
     print("Executing test 1...")
     request = ("GET /test.html HTTP/1.1\r\n" + 
-                "Host: localhost:12000\r\n")
+                "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
     # validate response
     expectedResult = "200"
@@ -49,7 +47,7 @@ def server_test_1(testResults):
 def server_test_2(testResults):
     print("Executing test 2...")
     request = ("GET /test.htm HTTP/1.1\r\n" + 
-                "Host: localhost:12000\r\n")
+                "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
     # validate response
     expectedResult = "400"
@@ -60,7 +58,7 @@ def server_test_2(testResults):
 def server_test_3(testResults):
     print("Executing test 3...")
     request = ("GET /notFound.html HTTP/1.1\r\n" + 
-                "Host: localhost:12000\r\n")
+                "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
     # validate response
     expectedResult = "404"

@@ -51,12 +51,13 @@ def respond_200(connectionSocket, filePath):
     data = file.read()
 
     # send header
-    header = http_header_response(200, contentLength=len(data), contentType="text/html")
-    connectionSocket.send(header.encode())
+    response = http_header_response(200, contentLength=len(data), contentType="text/html")
+    # connectionSocket.send(header.encode())
     # send data
     for i in range(0, len(data)):
-        connectionSocket.send(data[i].encode())
-    connectionSocket.send("\n".encode())
+        response = response + data[i]
+        # connectionSocket.send(data[i].encode())
+    connectionSocket.send(response.encode())
 
 
 # Description: Respond 400 status to the request

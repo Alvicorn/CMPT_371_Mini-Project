@@ -76,13 +76,8 @@ def start_server():
     while True:
         # Server waits on accept for incoming requests.
         # New socket created on return
-        try:
-            connectionSocket, addr = serverSocket.accept()
-            handle_request(connectionSocket)
-        except KeyboardInterrupt:
-            print("Closing Server...")
-            serverSocket.close()
-            break
+        connectionSocket, addr = serverSocket.accept()
+        handle_request(connectionSocket)
 
     
 ##################################
