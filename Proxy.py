@@ -10,7 +10,8 @@ import socket
 import os
 import time
 import HTTP
-import sys
+import json
+from datetime import datetime as dt
 
 ###########
 # GLOBALS #
@@ -20,10 +21,9 @@ SERVER_NAME = socket.gethostbyname(socket.gethostname())
 PROXY_PORT = 12001
 BUFFER_SIZE = 1024
 
-CACHED_FILES = []
 CACHE_SIZE = 5
-
-
+# cacheList = []
+# cacheCount = 0
 
 #############
 # FUNCTIONS #
@@ -40,13 +40,15 @@ def request_to_server(request):
         serverResponse = clientSocket.recv(BUFFER_SIZE)
         header = serverResponse.decode().split(" ", 15)
       
+        # File found in server
         if header[1] == "200":
             data = header[15].split("\n", 1)[1]
-            time.sleep(1)     # buffer to allow time for the server to close
+            time.sleep(1)     
             clientSocket.close()
             return data
+        # file not found in server
         else:
-            time.sleep(1)     # buffer to allow time for the server to close
+            time.sleep(1)  
             clientSocket.close()
             return header[1]
     except socket.error:
@@ -55,6 +57,29 @@ def request_to_server(request):
 
 # Description: Handle a single client request
 def handle_request(connectionSocket):
+    # load cache information
+    cacheCount = 0
+    cacheList = []
+    blank = False
+    with open("./Cache/files.json", "r+") as f:
+        try:
+            j = json.load(f)
+            cacheCount = j["cache_count"]
+            cacheList = j["files"]
+        except ValueError:
+            blank = True
+            blankJson = {
+                "cache_count": 0,
+                "files": []
+            }
+            json.dump(blankJson, f, ensure_ascii=False, indent=4)
+    if blank:
+            with open("./Cache/files.json", "r") as f:
+                j = json.load(f)
+                cacheCount = j["cache_count"]
+                cacheList = j["files"]
+
+    # parse request from client            
     request = connectionSocket.recv(BUFFER_SIZE).decode()  
     requestWords = request.split(" ")[0:3]
     # print(request + "\n")
@@ -65,16 +90,10 @@ def handle_request(connectionSocket):
         filePath = requestWords[1][1:] if len(requestWords[1]) > 2 else requestWords[1] # remove the leading /
 
         if filePath != "favicon.ico":
-            # print("Method: " + method)
-            filePath_cache = "Cache/" + filePath
-            # print(" File path: " + filePath)
-            
-            # print(os.path.abspath(os.getcwd()))
-            
+            filePath_cache = "Cache/" + filePath 
             if method == "GET":
-
                 # cache is empty
-                if len(CACHED_FILES) == 0:
+                if cacheCount < 1:
                     request = ("GET /"+ filePath + " HTTP/1.1\r\n" + 
                                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
                     serverResponse = request_to_server(request)
@@ -85,11 +104,23 @@ def handle_request(connectionSocket):
                         # TODO handle the other codes...remainder is 200
                         
                         if len(serverResponse) > 6: # 200 code
-                            if len(CACHED_FILES) == CACHE_SIZE - 1: # cache size exceeded, evict oldest item
-                                CACHED_FILES.pop(0)
-                            CACHED_FILES.append(filePath)
-                            with open(filePath_cache, "w") as f:
+                            cacheCount += 1
+                        
+                            date = dt.now()
+                            cacheList.append({
+                                "path": filePath_cache,
+                                "last_access_date": date.strftime("%a, %d %b %Y %H:%M:%S %Z")
+                            })
+                            with open("./Cache/files.json", "w", encoding="utf8") as f:
+                                toJson = {
+                                    "cache_count": cacheCount,
+                                    "files": cacheList
+                                }
+                                json.dump(toJson, f, ensure_ascii=False, indent=4)
+
+                            with open(filePath_cache, "w") as f:                                
                                 f.write(serverResponse)
+
 
                             HTTP.respond_200(connectionSocket, filePath_cache)
 
