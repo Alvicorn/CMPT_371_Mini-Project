@@ -60,6 +60,11 @@ def handle_request(connectionSocket):
     cacheCount = 0
     cacheList = []
     blank = False
+
+    if not os.path.exists("./Cache/files.json"):
+        os.mkdir("Cache")
+        open("./Cache/files.json", "w").close()
+
     with open("./Cache/files.json", "r+") as f:
         try:
             j = json.load(f)
@@ -73,23 +78,22 @@ def handle_request(connectionSocket):
             }
             json.dump(blankJson, f, ensure_ascii=False, indent=4)
     if blank:
-            with open("./Cache/files.json", "r") as f:
-                j = json.load(f)
-                cacheCount = j["cache_count"]
-                cacheList = j["files"]
+        with open("./Cache/files.json", "r") as f:
+            j = json.load(f)
+            cacheCount = j["cache_count"]
+            cacheList = j["files"]
 
     # parse request from client            
     request = connectionSocket.recv(BUFFER_SIZE).decode()  
     requestWords = request.split(" ")[0:3]
-    # print(request + "\n")
 
     if len(requestWords) > 1:
 
         method = requestWords[0]
         filePath = requestWords[1][1:] if len(requestWords[1]) > 2 else requestWords[1] # remove the leading /
 
-        if filePath != "favicon.ico":
-            filePath_cache = "Cache/" + filePath 
+        if filePath != "favicon.ico":           
+            filePath_cache = "Cache/" + filePath.split("/")[-1] #isolate the file name and its extension
             if method == "GET":
                 # cache is empty
                 if cacheCount < 1:
@@ -143,7 +147,14 @@ def handle_request(connectionSocket):
                         # TODO handle the other codes...remainder is 200
                         
                             if len(serverResponse) > 6: # 200 code
+                                if cacheCount == CACHE_SIZE:
+                                    
+                                    rm = cacheList.pop(0) # evict the oldest cached entry
+                                    cacheCount -= 1
+                                    os.remove(rm["path"])
+
                                 cacheCount += 1
+                        
                         
                                 date = dt.now()
                                 cacheList.append({
@@ -160,8 +171,7 @@ def handle_request(connectionSocket):
                                 with open(filePath_cache, "w") as f:                                
                                     f.write(serverResponse)
 
-
-                                HTTP.respond_200(connectionSocket, filePath_cache) 
+                                HTTP.respond_200(connectionSocket, filePath_cache)
                         else: # 400
                             HTTP.respond_400(connectionSocket)
 

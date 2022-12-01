@@ -9,11 +9,13 @@ import multiprocessing as mp
 import time
 from socket import *
 import socket
+import shutil
+import os
 
 from Proxy import start_proxy
 from Server import start_server
 
-MAX_RUNTIME = 10 # second
+MAX_RUNTIME = 20 # second
 SERVER_NAME = socket.gethostbyname(socket.gethostname())
 PROXY_PORT = 12001
 
@@ -46,7 +48,7 @@ def proxy_test_1(testResults):
 
 def proxy_test_2(testResults):
     print("Executing test 2...")
-    request = ("GET /test1.html HTTP/1.1\r\n" + 
+    request = ("GET /Files/test1.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(PROXY_PORT) + "\r\n")
     serverResponse = client_connection(request)
     # validate response
@@ -56,7 +58,7 @@ def proxy_test_2(testResults):
 
 def proxy_test_3(testResults):
     print("Executing test 3...")
-    request = ("GET /test2.html HTTP/1.1\r\n" + 
+    request = ("GET /Files/test2.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(PROXY_PORT) + "\r\n")
     serverResponse = client_connection(request)
     # validate response
@@ -66,7 +68,7 @@ def proxy_test_3(testResults):
 
 def proxy_test_4(testResults):
     print("Executing test 4...")
-    request = ("GET /test3.html HTTP/1.1\r\n" + 
+    request = ("GET /Files/test3.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(PROXY_PORT) + "\r\n")
     serverResponse = client_connection(request)
     # validate response
@@ -76,7 +78,7 @@ def proxy_test_4(testResults):
 
 def proxy_test_5(testResults):
     print("Executing test 5...")
-    request = ("GET /test4.html HTTP/1.1\r\n" + 
+    request = ("GET /Files/test4.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(PROXY_PORT) + "\r\n")
     serverResponse = client_connection(request)
     # validate response
@@ -128,6 +130,13 @@ def proxy_tests(testResults):
     proxy_test_6(testResults)
     proxy_test_7(testResults)
     proxy_test_8(testResults)
+    
+    # # remove cache
+    # try: 
+    #     shutil.rmtree("Cache")
+    # except OSError:
+    #     os.rmdir("Cache")
+    
 
 # Description: Run the server
 def run_server():
