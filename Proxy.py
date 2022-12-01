@@ -22,8 +22,7 @@ PROXY_PORT = 12001
 BUFFER_SIZE = 1024
 
 CACHE_SIZE = 5
-# cacheList = []
-# cacheCount = 0
+
 
 #############
 # FUNCTIONS #
@@ -135,14 +134,36 @@ def handle_request(connectionSocket):
                     # file is not found in cache, make a request to the server
                     else:
                         request = ("GET /"+ filePath + " HTTP/1.1\r\n" + 
-                                "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
+                                     "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
                         serverResponse = request_to_server(request)
                         if serverResponse != socket.error:
                             if serverResponse == "404":
                                 HTTP.respond_404(connectionSocket)
-            
-            else: # 400
-                HTTP.respond_400(connectionSocket)
+                        
+                        # TODO handle the other codes...remainder is 200
+                        
+                            if len(serverResponse) > 6: # 200 code
+                                cacheCount += 1
+                        
+                                date = dt.now()
+                                cacheList.append({
+                                    "path": filePath_cache,
+                                    "last_access_date": date.strftime("%a, %d %b %Y %H:%M:%S %Z")
+                                })
+                                with open("./Cache/files.json", "w", encoding="utf8") as f:
+                                    toJson = {
+                                        "cache_count": cacheCount,
+                                        "files": cacheList
+                                    }
+                                    json.dump(toJson, f, ensure_ascii=False, indent=4)
+
+                                with open(filePath_cache, "w") as f:                                
+                                    f.write(serverResponse)
+
+
+                                HTTP.respond_200(connectionSocket, filePath_cache) 
+                        else: # 400
+                            HTTP.respond_400(connectionSocket)
 
     # Close connection too client (but not welcoming socket)
     connectionSocket.close()
