@@ -103,7 +103,7 @@ Type the following into a web browser
 #### <mark>400</mark>
 Type the following into a web browser
 ```
-http://IP_ADDRESS:12001/test.htm
+http://IP_ADDRESS:12001/test.html
 ```
 * **Expected Response:** Bad Request
 
@@ -124,11 +124,11 @@ http://IP_ADDRESS:12000/notFound.html
 #### <mark>408</mark>
 Type the following into a web browser
 ```
-
+http://IP_ADDRESS:12001/test.html
 ```
 * **Expected Response:** Request Timed Out
 
-* **Done:** No
+* **Done:** Yes
 * **Notes:** N/A
 
 ## **Bonus Task: Multi-Treaded Web Server**
