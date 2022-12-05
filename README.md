@@ -9,7 +9,7 @@ Create a simple web server using socket programming that follows the HTTP protoc
 Code | Message           | Done |
 -----|-------------------|------|
 200  | OK                | Yes  |
-400  | Bad Request       | Yes   |
+400  | Bad Request       | Yes  |
 404  | Not Found         | Yes  |
 408  | Request Timed Out | NO   |
 

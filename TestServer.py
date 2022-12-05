@@ -45,7 +45,7 @@ def server_test_1(testResults):
 
 def server_test_2(testResults):
     print("Executing test 2...")
-    request = ("GET /Files/test1.html HTTP/1.1\r\n" + 
+    request = ("GET /test1.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
     # validate response
@@ -55,7 +55,7 @@ def server_test_2(testResults):
 
 def server_test_3(testResults):
     print("Executing test 3...")
-    request = ("GET /Files/test2.html HTTP/1.1\r\n" + 
+    request = ("GET /test2.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
     # validate response
@@ -65,7 +65,7 @@ def server_test_3(testResults):
 
 def server_test_4(testResults):
     print("Executing test 4...")
-    request = ("GET /Files/test3.html HTTP/1.1\r\n" + 
+    request = ("GET /test3.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
     # validate response
@@ -75,7 +75,7 @@ def server_test_4(testResults):
 
 def server_test_5(testResults):
     print("Executing test 5...")
-    request = ("GET /Files/test4.html HTTP/1.1\r\n" + 
+    request = ("GET /test4.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
     # validate response
@@ -85,7 +85,7 @@ def server_test_5(testResults):
 
 def server_test_6(testResults):
     print("Executing test 6...")
-    request = ("GET /Files/test5.html HTTP/1.1\r\n" + 
+    request = ("GET /test5.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
     # validate response

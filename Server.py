@@ -39,11 +39,12 @@ def handle_request(connectionSocket):
 
         if filePath != "favicon.ico":
             # print("Method: " + method)
+            filePath = "Files/" + filePath
             # print(" File path: " + filePath)
             # print(os.path.abspath(os.getcwd()))
             
             if method == "GET":
-
+                
                 if len(filePath) > 1 and os.path.exists(filePath) == True: # 200
                     HTTP.respond_200(connectionSocket, filePath)
                 
