@@ -72,3 +72,10 @@ def respond_404(connectionSocket):
     header = http_header_response(404, contentLength=16, contentType="text/html")
     response = header + "\n\n404 Not Found"
     connectionSocket.send(response.encode())
+    
+    
+# Description: Respond 408 status to the request
+def respond_408(connectionSocket):
+    header = http_header_response(400, contentLength=16, contentType="text/html")
+    response = header + "Request Timed Out"
+    connectionSocket.send(response.encode())

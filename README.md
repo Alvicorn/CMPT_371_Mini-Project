@@ -11,7 +11,7 @@ Code | Message           | Done |
 200  | OK                | Yes  |
 400  | Bad Request       | Yes  |
 404  | Not Found         | Yes  |
-408  | Request Timed Out | NO   |
+408  | Request Timed Out | Yes   |
 
 
 ### Testing
@@ -51,11 +51,11 @@ http://IP_ADDRESS:12000/notFound.html
 #### <mark>408</mark>
 Type the following into a web browser
 ```
-
+http://IP_ADDRESS:12000/test.html
 ```
 * **Expected Response:** Request Timed Out
 
-* **Done:** No
+* **Done:** Yes
 * **Notes:** N/A
 
 
