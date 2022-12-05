@@ -135,6 +135,9 @@ def run_server():
 
 
 if __name__ == "__main__":
+
+    expectedCode = [200, 200, 200, 200, 200, 200, 400, 404] # expected codes for test cases
+
     with Manager() as manager:
         testResults = manager.dict()   # dictionary of test case results
 
@@ -158,12 +161,6 @@ if __name__ == "__main__":
         print("\n#########################################")
         print("#              TEST RESULTS             #")
         print("#                                       #")
-        print("#\tTest 1 (200):\t\t" + testResults[0] + "\t#")
-        print("#\tTest 2 (200):\t\t" + testResults[1] + "\t#")
-        print("#\tTest 3 (200):\t\t" + testResults[2] + "\t#")
-        print("#\tTest 4 (200):\t\t" + testResults[3] + "\t#")
-        print("#\tTest 5 (200):\t\t" + testResults[4] + "\t#")
-        print("#\tTest 6 (200):\t\t" + testResults[5] + "\t#")
-        print("#\tTest 7 (400):\t\t" + testResults[6] + "\t#")
-        print("#\tTest 8 (404):\t\t" + testResults[7] + "\t#")
+        for index in range(len(expectedCode)):
+            print(f"#\tTest {index+1} ({expectedCode[index]}):\t\t {testResults[index]} \t#")
         print("#########################################\n")
