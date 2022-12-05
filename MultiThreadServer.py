@@ -1,23 +1,22 @@
 # Server.py
 # CMPT 371: Mini-Project
-# Created On:  Nov 22, 2022
+# Created On:  Dec 5, 2022
 # Last Modified On: Nov 22, 2022
 #
-# Description: Basic, singly-threaded web server that handles HTTP requests
+# Description: Basic, multi-threaded web server that handles HTTP requests
 
-# from socket import *
+
 import socket
 import os
-import time
 import HTTP
-import sys
+import threading
 
 
 
 ###########
 # GLOBALS #
 ###########
-SERVER_PORT = 12000
+SERVER_PORT = 12002
 BUFFER_SIZE = 1024
 
 
@@ -41,7 +40,7 @@ def handle_request(connectionSocket):
             
             if method == "GET":
                 filePath = "Files/" + filePath
-
+                
                 if len(filePath) > 1 and os.path.exists(filePath) == True: # 200
                     HTTP.respond_200(connectionSocket, filePath)
                 
@@ -75,8 +74,8 @@ def start_server():
         # Server waits on accept for incoming requests.
         # New socket created on return
         connectionSocket, addr = serverSocket.accept()
-        handle_request(connectionSocket)
-
+        thread = threading.Thread(target=handle_request, args=(connectionSocket, ))
+        thread.start()
     
 ##################################
 if __name__ == "__main__":
