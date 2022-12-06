@@ -170,7 +170,7 @@ if __name__ == "__main__":
         exit(1)
     else:
         expectedCode = [200, 200, 200, 200, 200, 200, 400, 404] # expected codes for test cases
-        max_runtime = len(expectedCode) * numberOfClients * numberOfClients
+        max_runtime = len(expectedCode) * numberOfClients * numberOfClients * 2
         if numberOfClients == 1:
             max_runtime *= 3
         with Manager() as manager:

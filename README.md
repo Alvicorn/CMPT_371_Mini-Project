@@ -4,7 +4,7 @@
 * Server port is on 12001
 * Proxy port is 12001
 * Multi-threaded server is on 12002
-* Develped with Python 3.9
+* Developed with Python 3.9
 
 
 

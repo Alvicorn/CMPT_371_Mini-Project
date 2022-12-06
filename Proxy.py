@@ -177,7 +177,6 @@ def handle_request(connectionSocket):
                                 HTTP.respond_404(connectionSocket)
                          
                             else: # 200 code
-                                print("here")
                                 if cacheCount == CACHE_SIZE:
                                     rm = cacheList.pop(0) # evict the oldest cached entry
                                     cacheCount -= 1
