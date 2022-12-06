@@ -159,46 +159,55 @@ def run_server():
 
 
 if __name__ == "__main__":
+    numberOfClients = input("Number of clients: ")
+    try:
+        numberOfClients= int(numberOfClients)
+    except ValueError:
+        print("Input must be a number!")
+        exit(1)
+    if numberOfClients < 1:
+        print("There must be at least 1 client!")
+        exit(1)
+    else:
+        expectedCode = [200, 200, 200, 200, 200, 200, 400, 404] # expected codes for test cases
+        max_runtime = len(expectedCode) * numberOfClients * numberOfClients
+        if numberOfClients == 1:
+            max_runtime *= 2
+        with Manager() as manager:
 
-    expectedCode = [200, 200, 200, 200, 200, 200, 400, 404] # expected codes for test cases
-    numberOfClients = 3;
-    max_runtime = len(expectedCode) * numberOfClients * numberOfClients
+            results = []
+            for i in range(numberOfClients):
+                testResults = manager.dict()   # dictionary of test case results
+                results.append(testResults)            
 
-    with Manager() as manager:
+            print("Executing tests...")
+            run = Process(target=run_server) # process to run the server
+            run.start()
 
-        results = []
-        for i in range(numberOfClients):
-            testResults = manager.dict()   # dictionary of test case results
-            results.append(testResults)            
+            p = []
+            for clientNumber in range(numberOfClients):
+                p.append(Process(target=server_tests, args=(results, clientNumber, numberOfClients, ))) # process to execute test cases
+            
+            for process in p:
+                process.start()
+            
+            time.sleep(max_runtime)
+            
+            for process in p:
+                if process.is_alive():
+                    process.terminate()
+                process.join()
 
-        print("Executing tests...")
-        run = Process(target=run_server) # process to run the server
-        run.start()
+            run.terminate()
+            run.join()
 
-        p = []
-        for clientNumber in range(numberOfClients):
-            p.append(Process(target=server_tests, args=(results, clientNumber, numberOfClients, ))) # process to execute test cases
-        
-        for process in p:
-            process.start()
-        
-        time.sleep(max_runtime)
-        
-        for process in p:
-            if process.is_alive():
-                process.terminate()
-            process.join()
-
-        run.terminate()
-        run.join()
-
-        print("\n#################################################################################")
-        print("#                                  TEST RESULTS                                 #")
-        print("#                                                                               #")
-        for index in range(len(expectedCode)):
-            for testResult in range(numberOfClients):
-                s = results[testResult][index]['status']
-                t = results[testResult][index]['time']
-                print(f"#\tTest {index+1} [Client-{testResult+1}] ({expectedCode[index]}):\t {s}\t[{time.ctime(t)}]\t#")
+            print("\n#################################################################################")
+            print("#                                  TEST RESULTS                                 #")
             print("#                                                                               #")
-        print("#################################################################################\n")
+            for index in range(len(expectedCode)):
+                for testResult in range(numberOfClients):
+                    s = results[testResult][index]['status']
+                    t = results[testResult][index]['time']
+                    print(f"#\tTest {index+1} [Client-{testResult+1}] ({expectedCode[index]}):\t {s}\t[{time.ctime(t)}]\t#")
+                print("#                                                                               #")
+            print("#################################################################################\n")
