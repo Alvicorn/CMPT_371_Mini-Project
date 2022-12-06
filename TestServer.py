@@ -114,7 +114,17 @@ def server_test_8(testResults):
     expectedResult = "404"
     response = serverResponse.decode().split(" ")
     testResults[7] = "PASS" if response[1] == expectedResult else "FAIL"
-
+    
+# Description: Send a request for test.htm. the request timed out (408)
+def server_test_9(testResults):
+    print("Executing test 9...")
+    request = ("GET /test.htm HTTP/1.1\r\n" + 
+                "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
+     serverResponse = client_connection(request)
+    # validate response
+    expectedResult = "408"
+    response = serverResponse.decode().split(" ")
+    testResults[6] = "PASS" if response[1] == expectedResult else "FAIL"   
 
 # Description: Execute all test cases in a sequential order since the server
 #               is singly-threaded
@@ -127,6 +137,7 @@ def server_tests(testResults):
     server_test_6(testResults)
     server_test_7(testResults)
     server_test_8(testResults)
+    server_test_9(testResults)
 
 # Description: Run the server
 def run_server():
@@ -136,7 +147,7 @@ def run_server():
 
 if __name__ == "__main__":
 
-    expectedCode = [200, 200, 200, 200, 200, 200, 400, 404] # expected codes for test cases
+    expectedCode = [200, 200, 200, 200, 200, 200, 400, 404, 408] # expected codes for test cases
 
     with Manager() as manager:
         testResults = manager.dict()   # dictionary of test case results
