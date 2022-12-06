@@ -9,6 +9,8 @@ import multiprocessing as mp
 import time
 from socket import *
 import socket
+import shutil
+import os
 
 from Proxy import start_proxy
 from Server import start_server
@@ -116,6 +118,32 @@ def proxy_test_8(testResults):
     response = serverResponse.decode().split(" ")
     testResults[7] = "PASS" if response[1] == expectedResult else "FAIL"
 
+def proxy_test_9(testResults):
+    print("Executing test 9...")
+
+    # Creating the HTML file
+    file_html = open("Files/test304.html", "w")
+    # Adding the input data to the HTML file
+    file_html.write('''<html>
+    <head>
+    <title>HTML File</title>
+    </head> 
+    <body>           
+    <p>This pages tests HTTP code 304!</p> 
+    </body>
+    </html>''')
+    # Saving the data into the HTML file
+    file_html.close()
+    request = ("GET /test304.html HTTP/1.1\r\n" + 
+                "Host: " + str(SERVER_NAME) + ":" + str(PROXY_PORT) + "\r\n"
+                "If-Modified-Since: Wed. 01 Dec 2022 13:24:54")
+    serverResponse = client_connection(request)
+    # validate response
+    expectedResult = "304"
+    response = serverResponse.decode().split(" ")
+    testResults[8] = "PASS" if response[1] == expectedResult else "FAIL"
+    os.remove("Files/test304.html")
+
 
 # Description: Execute all test cases in a sequential order since the server
 #               is singly-threaded
@@ -128,13 +156,8 @@ def proxy_tests(testResults):
     proxy_test_6(testResults)
     proxy_test_7(testResults)
     proxy_test_8(testResults)
-    
-    # # remove cache
-    # try: 
-    #     shutil.rmtree("Cache")
-    # except OSError:
-    #     os.rmdir("Cache")
-    
+    proxy_test_9(testResults)
+        
 
 # Description: Run the server
 def run_server():
@@ -144,6 +167,15 @@ def run_proxy():
     start_proxy()
 
 if __name__ == "__main__":
+
+    # remove cache
+    try: 
+        shutil.rmtree("Cache")
+    except OSError:
+        if os.path.exists("Cache"):
+            os.rmdir("Cache")
+
+
     with Manager() as manager:
         testResults = manager.dict()   # dictionary of test case results
 
@@ -179,4 +211,5 @@ if __name__ == "__main__":
         print("#\tTest 6 (200):\t\t" + testResults[5] + "\t#")
         print("#\tTest 7 (400):\t\t" + testResults[6] + "\t#")
         print("#\tTest 8 (404):\t\t" + testResults[7] + "\t#")
+        print("#\tTest 8 (304):\t\t" + testResults[8] + "\t#")
         print("#########################################\n")

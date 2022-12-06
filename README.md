@@ -91,14 +91,14 @@ This proxy server runs locally and has a cache storage within the *Cache* folder
 Code | Message           | Done |
 -----|-------------------|------|
 200  | OK                | Yes  |
-304  | Not Modified      | Working on it - Alvin   |
+304  | Not Modified      | NO   |
 400  | Bad Request       | Yes  |
 404  | Not Found         | Yes  |
 408  | Request Timed Out | NO   |
 
 
 ### Testing
-Note: Ensure the web server is running on port 12000 before testing
+Note: Ensure the web server is running on port 12000 before testing. The test will automatically remove the cache folder.
 
 #### <mark>200</mark>
 Type the following into a web browser

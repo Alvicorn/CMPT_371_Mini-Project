@@ -13,7 +13,7 @@ TIMEOUT = 2 # seconds
 
 
 # Description: Generate the http response status line and header
-def http_header_response(status, contentLength=0, contentType="none"):
+def http_header_response(status, contentLength=0, contentType="none", lastModified="none"):
     # create the status line
     header = "HTTP/1.1 "
     if status == 200:
@@ -29,7 +29,9 @@ def http_header_response(status, contentLength=0, contentType="none"):
     
     # append the date
     date = dt.now()
-    header = header + "date: " + date.strftime("%a, %d %b %Y %H:%M:%S %Z") + "\r\n"
+    header = header + "Date: " + date.strftime("%a, %d %b %Y %H:%M:%S %Z") + "\r\n"
+    # append last modified
+    header = header + "Last-Modified: " + lastModified + "\n"
     # append server details
     header = header + "Server: Local server for mini-project\r\n"
     #append accepted ranges
@@ -45,13 +47,13 @@ def http_header_response(status, contentLength=0, contentType="none"):
 
 # Description: Respond 200 status to the request and send
 #              the requested html file
-def respond_200(connectionSocket, filePath):
+def respond_200(connectionSocket, filePath, lastModified="none"):
     # open and read file
     file = open(filePath)
     data = file.read()
 
     # send header
-    response = http_header_response(200, contentLength=len(data), contentType="text/html")
+    response = http_header_response(200, contentLength=len(data), contentType="text/html", lastModified=lastModified)
     # connectionSocket.send(header.encode())
     # send data
     for i in range(0, len(data)):
@@ -78,4 +80,10 @@ def respond_404(connectionSocket):
 def respond_408(connectionSocket):
     header = http_header_response(400, contentLength=16, contentType="text/html")
     response = header + "Request Timed Out"
+    connectionSocket.send(response.encode())
+
+# Description: Respond 304 status to the request
+def respond_304(connectionSocket, lastModified):
+    header = http_header_response(304, contentLength=16, contentType="text/html", lastModified=lastModified)
+    response = header + "\n\n304 Not Modified"
     connectionSocket.send(response.encode())
