@@ -91,7 +91,7 @@ This proxy server runs locally and has a cache storage within the *Cache* folder
 Code | Message           | Done |
 -----|-------------------|------|
 200  | OK                | Yes  |
-304  | Not Modified      | NO   |
+304  | Not Modified      | working on it -alvin   |
 400  | Bad Request       | Yes  |
 404  | Not Found         | Yes  |
 408  | Request Timed Out | NO   |
