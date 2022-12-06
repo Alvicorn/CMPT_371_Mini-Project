@@ -9,6 +9,7 @@
 import socket
 import os
 import time
+from datetime import datetime as dt
 import HTTP
 import sys
 
@@ -43,7 +44,13 @@ def handle_request(connectionSocket):
                 filePath = "Files/" + filePath
 
                 if len(filePath) > 1 and os.path.exists(filePath) == True: # 200
-                    HTTP.respond_200(connectionSocket, filePath)
+                    modTime = os.path.getmtime(filePath)
+                    modTime = dt.fromtimestamp(modTime)
+                    modTime = modTime.strftime("%a, %d %b %Y %H:%M:%S")
+                    # open and read file
+                    file = open(filePath)
+                    data = file.read()     
+                    HTTP.respond_200(connectionSocket, data, lastModified=modTime)
                 
                 elif filePath[-5:] != ".html": # 400
                     HTTP.respond_400(connectionSocket)                    

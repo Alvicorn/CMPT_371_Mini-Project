@@ -47,13 +47,9 @@ def http_header_response(status, contentLength=0, contentType="none", lastModifi
 
 # Description: Respond 200 status to the request and send
 #              the requested html file
-def respond_200(connectionSocket, filePath, lastModified="none"):
-    # open and read file
-    file = open(filePath)
-    data = file.read()
-
+def respond_200(connectionSocket, data, lastModified="none"):
     # send header
-    response = http_header_response(200, contentLength=len(data), contentType="text/html", lastModified=lastModified)
+    response = http_header_response(200, contentLength=(len(data)), contentType="text/html", lastModified=lastModified)
     # connectionSocket.send(header.encode())
     # send data
     for i in range(0, len(data)):
@@ -83,7 +79,12 @@ def respond_408(connectionSocket):
     connectionSocket.send(response.encode())
 
 # Description: Respond 304 status to the request
-def respond_304(connectionSocket, lastModified):
-    header = http_header_response(304, contentLength=16, contentType="text/html", lastModified=lastModified)
-    response = header + "\n\n304 Not Modified"
+def respond_304(connectionSocket, data, lastModified):
+    # send header
+    response = http_header_response(304, contentLength=(len(data)), contentType="text/html", lastModified=lastModified)
+    # connectionSocket.send(header.encode())
+    # send data
+    for i in range(0, len(data)):
+        response = response + data[i]
+        # connectionSocket.send(data[i].encode())
     connectionSocket.send(response.encode())

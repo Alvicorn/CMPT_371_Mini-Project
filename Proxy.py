@@ -37,14 +37,16 @@ def request_to_server(request):
         clientSocket.connect((SERVER_NAME,SERVER_PORT))
         clientSocket.send(request.encode())
         serverResponse = clientSocket.recv(BUFFER_SIZE)
-        header = serverResponse.decode().split(" ", 15)
-      
+        header = serverResponse.decode().split(" ", 20)
+        # print(header)
         # File found in server
         if header[1] == "200":
-            data = header[15].split("\n", 1)[1]
+            t = header[13].split("\n")[0]
+            lastModified = f"{header[9]} {header[10]} {header[11]} {header[12]} {t}"
+            data = header[20].split("\n", 1)[1]
             time.sleep(1)     
             clientSocket.close()
-            return data
+            return [data, lastModified]
         # file not found in server
         else:
             time.sleep(1)  
@@ -85,8 +87,14 @@ def handle_request(connectionSocket):
 
     # parse request from client            
     request = connectionSocket.recv(BUFFER_SIZE).decode()  
-    requestWords = request.split(" ")[0:3]
-
+    lines = request.split("\r\n")
+    requestWords = lines[0].split(" ")
+    modSince = 0
+    if (len(lines) > 2):
+        if (lines[2].find("Connection")): 
+            str_date = lines[2].split(" ", 1)[1]
+            modSince = dt.strptime(str_date, "%a, %d %b %Y %H:%M:%S") 
+    
     if len(requestWords) > 1:
 
         method = requestWords[0]
@@ -106,13 +114,14 @@ def handle_request(connectionSocket):
                         
                         # TODO handle the other codes...remainder is 200
                         
-                        if len(serverResponse) > 6: # 200 code
+                        if len(serverResponse) == 2: # 200 code
                             cacheCount += 1
                         
                             date = dt.now()
                             cacheList.append({
                                 "path": filePath_cache,
-                                "last_access_date": date.strftime("%a, %d %b %Y %H:%M:%S %Z")
+                                "last_access_date": date.strftime("%a, %d %b %Y %H:%M:%S"),
+                                "last_modified":serverResponse[1]
                             })
                             with open("./Cache/files.json", "w", encoding="utf8") as f:
                                 toJson = {
@@ -122,16 +131,39 @@ def handle_request(connectionSocket):
                                 json.dump(toJson, f, ensure_ascii=False, indent=4)
 
                             with open(filePath_cache, "w") as f:                                
-                                f.write(serverResponse)
+                                f.write(serverResponse[0])
 
-
-                            HTTP.respond_200(connectionSocket, filePath_cache)
+                            HTTP.respond_200(connectionSocket, serverResponse[0], lastModified=serverResponse[1])
 
                 # check if file exists in the cache folder
                 else:
                     if len(filePath) > 1 and os.path.exists(filePath_cache) == True: # 200
-                        HTTP.respond_200(connectionSocket, filePath_cache)
-                
+                        
+                        cacheItem = 0
+                        for index in cacheList:
+                            if (index["path"] == filePath_cache):
+                                cacheItem = index
+
+                        fileLastModified = cacheItem["last_modified"]
+                        fileLastModified = dt.strptime(fileLastModified, "%a, %d %b %Y %H:%M:%S")       
+                        if (fileLastModified > modSince):
+                            modTime = os.path.getmtime(filePath_cache)
+                            modTime = dt.fromtimestamp(modTime)
+                            modTime = modTime.strftime("%a, %d %b %Y %H:%M:%S")
+                            # open and read file
+                            file = open(filePath_cache)
+                            data = file.read()      
+                            HTTP.respond_304(connectionSocket, data, lastModified=modTime)
+                        else:                        
+                            modTime = os.path.getmtime(filePath_cache)
+                            modTime = dt.fromtimestamp(modTime)
+                            modTime = modTime.strftime("%a, %d %b %Y %H:%M:%S")
+                            # open and read file
+                            file = open(filePath_cache)
+                            data = file.read()      
+                            HTTP.respond_200(connectionSocket, data, lastModified=modTime)
+                            
+                        
                     elif filePath[-5:] != ".html": # 400
                         HTTP.respond_400(connectionSocket)                    
 
@@ -143,35 +175,32 @@ def handle_request(connectionSocket):
                         if serverResponse != socket.error:
                             if serverResponse == "404":
                                 HTTP.respond_404(connectionSocket)
-                        
-                        # TODO handle the other codes...remainder is 200
-                        
-                            if len(serverResponse) > 6: # 200 code
+                         
+                            if len(serverResponse) > 2: # 200 code
                                 if cacheCount == CACHE_SIZE:
-                                    
                                     rm = cacheList.pop(0) # evict the oldest cached entry
                                     cacheCount -= 1
                                     os.remove(rm["path"])
 
                                 cacheCount += 1
                         
-                        
-                                date = dt.now()
-                                cacheList.append({
-                                    "path": filePath_cache,
-                                    "last_access_date": date.strftime("%a, %d %b %Y %H:%M:%S %Z")
-                                })
-                                with open("./Cache/files.json", "w", encoding="utf8") as f:
-                                    toJson = {
-                                        "cache_count": cacheCount,
-                                        "files": cacheList
-                                    }
-                                    json.dump(toJson, f, ensure_ascii=False, indent=4)
+                            date = dt.now()
+                            cacheList.append({
+                                "path": filePath_cache,
+                                "last_access_date": date.strftime("%a, %d %b %Y %H:%M:%S"),
+                                "last_modified":serverResponse[1]
+                            })
+                            with open("./Cache/files.json", "w", encoding="utf8") as f:
+                                toJson = {
+                                    "cache_count": cacheCount,
+                                    "files": cacheList
+                                }
+                                json.dump(toJson, f, ensure_ascii=False, indent=4)
 
-                                with open(filePath_cache, "w") as f:                                
-                                    f.write(serverResponse)
+                            with open(filePath_cache, "w") as f:                                
+                                f.write(serverResponse[0])
 
-                                HTTP.respond_200(connectionSocket, filePath_cache)
+                            HTTP.respond_200(connectionSocket, serverResponse[0], lastModified=serverResponse[1])
                         else: # 400
                             HTTP.respond_400(connectionSocket)
 
