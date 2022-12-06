@@ -176,7 +176,8 @@ def handle_request(connectionSocket):
                             if serverResponse == "404":
                                 HTTP.respond_404(connectionSocket)
                          
-                            if len(serverResponse) > 2: # 200 code
+                            else: # 200 code
+                                print("here")
                                 if cacheCount == CACHE_SIZE:
                                     rm = cacheList.pop(0) # evict the oldest cached entry
                                     cacheCount -= 1
@@ -184,23 +185,23 @@ def handle_request(connectionSocket):
 
                                 cacheCount += 1
                         
-                            date = dt.now()
-                            cacheList.append({
-                                "path": filePath_cache,
-                                "last_access_date": date.strftime("%a, %d %b %Y %H:%M:%S"),
-                                "last_modified":serverResponse[1]
-                            })
-                            with open("./Cache/files.json", "w", encoding="utf8") as f:
-                                toJson = {
-                                    "cache_count": cacheCount,
-                                    "files": cacheList
-                                }
-                                json.dump(toJson, f, ensure_ascii=False, indent=4)
+                                date = dt.now()
+                                cacheList.append({
+                                    "path": filePath_cache,
+                                    "last_access_date": date.strftime("%a, %d %b %Y %H:%M:%S"),
+                                    "last_modified":serverResponse[1]
+                                })
+                                with open("./Cache/files.json", "w", encoding="utf8") as f:
+                                    toJson = {
+                                        "cache_count": cacheCount,
+                                        "files": cacheList
+                                    }
+                                    json.dump(toJson, f, ensure_ascii=False, indent=4)
 
-                            with open(filePath_cache, "w") as f:                                
-                                f.write(serverResponse[0])
+                                with open(filePath_cache, "w") as f:                                
+                                    f.write(serverResponse[0])
 
-                            HTTP.respond_200(connectionSocket, serverResponse[0], lastModified=serverResponse[1])
+                                HTTP.respond_200(connectionSocket, serverResponse[0], lastModified=serverResponse[1])
                         else: # 400
                             HTTP.respond_400(connectionSocket)
 
