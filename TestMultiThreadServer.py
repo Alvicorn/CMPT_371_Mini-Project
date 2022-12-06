@@ -172,7 +172,7 @@ if __name__ == "__main__":
         expectedCode = [200, 200, 200, 200, 200, 200, 400, 404] # expected codes for test cases
         max_runtime = len(expectedCode) * numberOfClients * numberOfClients
         if numberOfClients == 1:
-            max_runtime *= 2
+            max_runtime *= 3
         with Manager() as manager:
 
             results = []

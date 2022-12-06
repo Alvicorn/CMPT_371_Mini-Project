@@ -24,7 +24,14 @@ Code | Message           | Done |
 * ```TestServer.py```
 
 ### <u>Testing</u>
-Note: Ensure the web server is running on port 12000 before testing
+When testing with ```TestServer.py```, ensure port 12000 is available. A report will be generated in the command line.
+
+```
+$ python3 TestServer.py
+```
+
+When testing in the browser, ensure the server is running on port 12000. See below for examples and expected outputs (highlighted)
+
 
 #### <mark>200</mark>
 Type the following into a web browser
@@ -32,7 +39,6 @@ Type the following into a web browser
 http://IP_ADDRESS:12000/test.html
 ```
 * **Expected Response:** OK
-
 * **Done:** Yes
 * **Notes:** N/A
 
@@ -42,7 +48,6 @@ Type the following into a web browser
 http://IP_ADDRESS:12000/test.htm
 ```
 * **Expected Response:** Bad Request
-
 * **Done:** Yes
 * **Notes:** N/A
 
@@ -52,7 +57,6 @@ Type the following into a web browser
 http://IP_ADDRESS:12000/notFound.html
 ```
 * **Expected Response:** Not Found
-
 * **Done:** Yes
 * **Notes:** Do not make a file in the root directory named notFound.html
 
@@ -63,16 +67,15 @@ Type the following into a web browser
 http://IP_ADDRESS:12000/test.html
 ```
 * **Expected Response:** Request Timed Out
-
 * **Done:** Yes
 * **Notes:** N/A
 
 
 ## **Task 2: Implement the Web Proxy Server**
-Hint: Module 2, slides 29-34
+This proxy server runs locally and has a cache storage within the *Cache* folder. This cache folder will be created and updated as requested.
 
 ### <u>Specifications</u> 
-* Cache size of 5
+* Cache size of 5 
 * Cache info and files are stored inside a folder named "Cache"
 * When running the proxy, ensure the the main server is also running so that the proxy can make requests to the server
 
@@ -88,7 +91,7 @@ Hint: Module 2, slides 29-34
 Code | Message           | Done |
 -----|-------------------|------|
 200  | OK                | Yes  |
-304  | Not Modified      | No   |
+304  | Not Modified      | Working on it - Alvin   |
 400  | Bad Request       | Yes  |
 404  | Not Found         | Yes  |
 408  | Request Timed Out | NO   |
@@ -166,7 +169,7 @@ Code | Message           | Done |
 ### <u>Testing</u>
 When testing in the browser, ensure the server is running on port 12002
 
-When testing with ```MultiThreadServer.py```, ensure port 12002 is available. This test may take a while.
+When testing with ```TestMultiThreadServer.py```, ensure port 12002 is available. This test may take a while. At the beginning of the program, the tester will input the number of clients to test
 
 #### <mark>200</mark>
 Type the following into a web browser
