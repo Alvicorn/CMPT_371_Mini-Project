@@ -91,7 +91,7 @@ This proxy server runs locally and has a cache storage within the *Cache* folder
 Code | Message           | Done |
 -----|-------------------|------|
 200  | OK                | Yes  |
-304  | Not Modified      | working on it -alvin   |
+304  | Not Modified      | Yes  |
 400  | Bad Request       | Yes  |
 404  | Not Found         | Yes  |
 408  | Request Timed Out | NO   |
@@ -174,7 +174,7 @@ When testing with ```TestMultiThreadServer.py```, ensure port 12002 is available
 #### <mark>200</mark>
 Type the following into a web browser
 ```
-http://IP_ADDRESS:12000/test.html
+http://IP_ADDRESS:12002/test.html
 ```
 * **Expected Response:** OK
 
@@ -184,7 +184,7 @@ http://IP_ADDRESS:12000/test.html
 #### <mark>400</mark>
 Type the following into a web browser
 ```
-http://IP_ADDRESS:12000/test.htm
+http://IP_ADDRESS:12002/test.htm
 ```
 * **Expected Response:** Bad Request
 
@@ -205,7 +205,7 @@ http://IP_ADDRESS:12000/notFound.html
 #### <mark>408</mark>
 Type the following into a web browser
 ```
-http://IP_ADDRESS:12000/test.html
+http://IP_ADDRESS:12002/test.html
 ```
 * **Expected Response:** Request Timed Out
 
