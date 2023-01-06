@@ -7,14 +7,14 @@ jobs:
       - image: "circleci/python:3.6.4"
     steps:
       - checkout
-      - run: python3 Server.py
+      - run: python3 code/Server.py
   test:
     working_directory: ~/circleci-python
     docker:
       - image: "circleci/python:3.6.4"
     steps:
       - checkout
-      - run: python3 TestServer.py
+      - run: python3 code/TestServer.py
 
 workflows:
   build_and_test:
