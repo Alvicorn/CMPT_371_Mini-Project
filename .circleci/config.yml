@@ -15,6 +15,8 @@ jobs:
     steps:
       - checkout
       - run: python3 code/TestServer.py
+      - run: python3 code/ProxyServer.py
+      - run: python3 code/TestMultiThreadServer.py
 
 workflows:
   build_and_test:
