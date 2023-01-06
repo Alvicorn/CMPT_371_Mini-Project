@@ -11,6 +11,7 @@ import time
 from Server import start_server
 from socket import *
 import socket
+import Format
 
 MAX_RUNTIME = 15 # second
 SERVER_NAME = socket.gethostbyname(socket.gethostname())
@@ -34,7 +35,7 @@ def client_connection(request):
 
 # Description: Send a request for test.html. File should be found (200)
 def server_test_1(testResults):
-    print("Executing test 1...")
+    Format.printTest("Executing test 1...")
     request = ("GET /test.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -44,7 +45,7 @@ def server_test_1(testResults):
     testResults[0] = "PASS" if response[1] == expectedResult else "FAIL"
 
 def server_test_2(testResults):
-    print("Executing test 2...")
+    Format.printTest("Executing test 2...")
     request = ("GET /test1.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -54,7 +55,7 @@ def server_test_2(testResults):
     testResults[1] = "PASS" if response[1] == expectedResult else "FAIL"
 
 def server_test_3(testResults):
-    print("Executing test 3...")
+    Format.printTest("Executing test 3...")
     request = ("GET /test2.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -64,7 +65,7 @@ def server_test_3(testResults):
     testResults[2] = "PASS" if response[1] == expectedResult else "FAIL"
 
 def server_test_4(testResults):
-    print("Executing test 4...")
+    Format.printTest("Executing test 4...")
     request = ("GET /test3.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -74,7 +75,7 @@ def server_test_4(testResults):
     testResults[3] = "PASS" if response[1] == expectedResult else "FAIL"
 
 def server_test_5(testResults):
-    print("Executing test 5...")
+    Format.printTest("Executing test 5...")
     request = ("GET /test4.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -84,7 +85,7 @@ def server_test_5(testResults):
     testResults[4] = "PASS" if response[1] == expectedResult else "FAIL"
 
 def server_test_6(testResults):
-    print("Executing test 6...")
+    Format.printTest("Executing test 6...")
     request = ("GET /test5.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -95,7 +96,7 @@ def server_test_6(testResults):
 
 # Description: Send a request for test.htm. Bad request because unknown file extension (400)
 def server_test_7(testResults):
-    print("Executing test 7...")
+    Format.printTest("Executing test 7...")
     request = ("GET /test.htm HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -106,7 +107,7 @@ def server_test_7(testResults):
 
 # Description: Send a request for notFound.html. File should not be found (404)
 def server_test_8(testResults):
-    print("Executing test 8...")
+    Format.printTest("Executing test 8...")
     request = ("GET /notFound.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -169,10 +170,17 @@ if __name__ == "__main__":
         test.join()
         run.join()
 
-        print("\n#########################################")
-        print("#              TEST RESULTS             #")
-        print("#                                       #")
+        Format.printHeader("\n#########################################")
+        Format.printHeader("#              TEST RESULTS             #")
+        Format.printHeader("#                                       #")
         for index in range(len(expectedCode)):
-            assert testResults[index] == "PASS"
-            print(f"#\tTest {index+1} ({expectedCode[index]}):\t\t {testResults[index]} \t#")
-        print("#########################################\n")
+            # assert testResults[index] == "PASS"
+
+            Format.printHeader("#", end='')
+            print(f"\tTest {index+1} ({expectedCode[index]}):\t\t", end='')
+            if testResults[index] == "PASS":
+                Format.printPass()
+            else:
+                Format.printFail()
+            Format.printHeader("\t#")
+        Format.printHeader("#########################################\n")

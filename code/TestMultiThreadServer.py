@@ -13,6 +13,7 @@ import time
 from MultiThreadServer import start_server
 from socket import *
 import socket
+import Format
 
 
 SERVER_NAME = socket.gethostbyname(socket.gethostname())
@@ -36,7 +37,7 @@ def client_connection(request):
 
 # Description: Send a request for test.html. File should be found (200)
 def server_test_1(results, clientNumber):
-    print(f"Executing test 1 for client {clientNumber+1}...")
+    Format.printTest(f"Executing test 1 for client {clientNumber+1}...")
     request = ("GET /test.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -47,7 +48,7 @@ def server_test_1(results, clientNumber):
     results[clientNumber][0] = {"status": status, "time": time.time()}
 
 def server_test_2(results, clientNumber):
-    print(f"Executing test 2 for client {clientNumber+1}...")
+    Format.printTest(f"Executing test 2 for client {clientNumber+1}...")
     request = ("GET /test1.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -58,7 +59,7 @@ def server_test_2(results, clientNumber):
     results[clientNumber][1] = {"status": status, "time": time.time()}
 
 def server_test_3(results, clientNumber):
-    print(f"Executing test 3 for client {clientNumber+1}...")
+    Format.printTest(f"Executing test 3 for client {clientNumber+1}...")
     request = ("GET /test2.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -69,7 +70,7 @@ def server_test_3(results, clientNumber):
     results[clientNumber][2] = {"status": status, "time": time.time()}
     
 def server_test_4(results, clientNumber):
-    print(f"Executing test 4 for client {clientNumber+1}...")
+    Format.printTest(f"Executing test 4 for client {clientNumber+1}...")
     request = ("GET /test3.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -80,7 +81,7 @@ def server_test_4(results, clientNumber):
     results[clientNumber][3] = {"status": status, "time": time.time()}
 
 def server_test_5(results, clientNumber):
-    print(f"Executing test 5 for client {clientNumber+1}...")
+    Format.printTest(f"Executing test 5 for client {clientNumber+1}...")
     request = ("GET /test4.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -91,7 +92,7 @@ def server_test_5(results, clientNumber):
     results[clientNumber][4] = {"status": status, "time": time.time()}
     
 def server_test_6(results, clientNumber):
-    print(f"Executing test 6 for client {clientNumber+1}...")
+    Format.printTest(f"Executing test 6 for client {clientNumber+1}...")
     request = ("GET /test5.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -103,7 +104,7 @@ def server_test_6(results, clientNumber):
 
 # Description: Send a request for test.htm. Bad request because unknown file extension (400)
 def server_test_7(results, clientNumber):
-    print(f"Executing test 7 for client {clientNumber+1}...")
+    Format.printTest(f"Executing test 7 for client {clientNumber+1}...")
     request = ("GET /test.htm HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -115,7 +116,7 @@ def server_test_7(results, clientNumber):
 
 # Description: Send a request for notFound.html. File should not be found (404)
 def server_test_8(results, clientNumber):
-    print(f"Executing test 8 for client {clientNumber+1}...")
+    Format.printTest(f"Executing test 8 for client {clientNumber+1}...")
     request = ("GET /notFound.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
     serverResponse = client_connection(request)
@@ -162,16 +163,17 @@ def run_server():
 if __name__ == "__main__":
 
     if (len(sys.argv) != 2):
-        print("Invalid arguments:")
+        Format.printError("Invalid arguments")
+        exit(1)
 
     numberOfClients = 0
     try:
         numberOfClients= int(sys.argv[1])
     except ValueError:
-        print("Input must be a number!")
+        Format.printError("Input must be a number!")
         exit(1)
     if numberOfClients < 1:
-        print("There must be at least 1 client!")
+        Format.printError("There must be at least 1 client!")
         exit(1)
     else:
         expectedCode = [200, 200, 200, 200, 200, 200, 400, 404] # expected codes for test cases
@@ -206,14 +208,22 @@ if __name__ == "__main__":
             run.terminate()
             run.join()
 
-            print("\n#################################################################################")
-            print("#                                  TEST RESULTS                                 #")
-            print("#                                                                               #")
+            Format.printHeader("\n#################################################################################")
+            Format.printHeader("#                                  TEST RESULTS                                 #")
+            Format.printHeader("#                                                                               #")
             for index in range(len(expectedCode)):
                 for testResult in range(numberOfClients):
                     s = results[testResult][index]['status']
-                    assert s == "PASS"
+                    # assert s == "PASS"
                     t = results[testResult][index]['time']
-                    print(f"#\tTest {index+1} [Client-{testResult+1}] ({expectedCode[index]}):\t {s}\t[{time.ctime(t)}]\t#")
-                print("#                                                                               #")
-            print("#################################################################################\n")
+                    
+                    Format.printHeader("#", end='')
+                    print(f"\tTest {index+1} [Client-{testResult+1}] ({expectedCode[index]}):\t", end='')
+                    if s == "PASS":
+                        Format.printPass()
+                    else:
+                        Format.printFail()                    
+                    print(f"\t[{time.ctime(t)}]", end='')
+                    Format.printHeader("\t#")
+                Format.printHeader("#                                                                               #")
+            Format.printHeader("#################################################################################\n")

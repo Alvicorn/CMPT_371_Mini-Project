@@ -10,6 +10,7 @@ import socket
 import os
 import HTTP
 import threading
+import Format
 
 
 
@@ -18,7 +19,7 @@ import threading
 ###########
 SERVER_PORT = 12002
 BUFFER_SIZE = 1024
-
+SERVER_TIMEOUT = 120 # 1 until timeout
 
 
 #############
@@ -64,20 +65,22 @@ def start_server():
 
     # Create TCP welcoming socket
     serverSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    serverSocket.settimeout(SERVER_TIMEOUT)
     serverSocket.bind((ip,SERVER_PORT))
 
     serverSocket.listen(1)
-    print ("The server is online...")
+    Format.printText("The server is online...")
     
-    
-    while True:
-        # Server waits on accept for incoming requests.
-        # New socket created on return
-        connectionSocket, addr = serverSocket.accept()
-        thread = threading.Thread(target=handle_request, args=(connectionSocket, ))
-        thread.start()
-    
+    try:
+        while True:
+            # Server waits on accept for incoming requests.
+            # New socket created on return
+            connectionSocket, addr = serverSocket.accept()
+            thread = threading.Thread(target=handle_request, args=(connectionSocket, ))
+            thread.start()
+    except socket.error:
+        Format.printWarning("Socket timeout")
 ##################################
 if __name__ == "__main__":
-    print("Starting Server...")
+    Format.printHeader("Starting Server...")
     start_server()

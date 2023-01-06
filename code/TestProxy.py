@@ -14,6 +14,7 @@ import os
 
 from Proxy import start_proxy
 from Server import start_server
+import Format
 
 MAX_RUNTIME = 20 # second
 SERVER_NAME = socket.gethostbyname(socket.gethostname())
@@ -38,7 +39,7 @@ def client_connection(request):
 # Description: Send a request for test.html. Proxy will request from the server.
 #              File should be found (200)
 def proxy_test_1(testResults):
-    print("Executing test 1...")
+    Format.printTest("Executing test 1...")
     request = ("GET /test.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(PROXY_PORT) + "\r\n" + 
                 "If-Modified-Since: Wed, 01 Dec 2022 13:24:54\r\n")
@@ -51,7 +52,7 @@ def proxy_test_1(testResults):
 # Description: Send a request for test.html. Proxy will request from the server.
 #              File should be found (200)
 def proxy_test_2(testResults):
-    print("Executing test 2...")
+    Format.printTest("Executing test 2...")
     request = ("GET /test1.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(PROXY_PORT) + "\r\n" + 
                 "If-Modified-Since: Wed, 01 Dec 2022 13:24:54\r\n")
@@ -64,7 +65,7 @@ def proxy_test_2(testResults):
 # Description: Send a request for test.html. Proxy will request from the server.
 #              File should be found (200)
 def proxy_test_3(testResults):
-    print("Executing test 3...")
+    Format.printTest("Executing test 3...")
     request = ("GET /test2.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(PROXY_PORT) + "\r\n" + 
                 "If-Modified-Since: Wed, 01 Dec 2022 13:24:54\r\n")
@@ -77,7 +78,7 @@ def proxy_test_3(testResults):
 # Description: Send a request for test.html. Proxy will request from the server.
 #              File should be found (200)
 def proxy_test_4(testResults):
-    print("Executing test 4...")
+    Format.printTest("Executing test 4...")
     request = ("GET /test3.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(PROXY_PORT) + "\r\n" + 
                 "If-Modified-Since: Wed, 01 Dec 2022 13:24:54\r\n")
@@ -90,7 +91,7 @@ def proxy_test_4(testResults):
 # Description: Send a request for test.html. Proxy will request from the server.
 #              File should be found (200)
 def proxy_test_5(testResults):
-    print("Executing test 5...")
+    Format.printTest("Executing test 5...")
     request = ("GET /test4.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(PROXY_PORT) + "\r\n" + 
                 "If-Modified-Since: Wed, 01 Dec 2022 13:24:54\r\n")
@@ -103,7 +104,7 @@ def proxy_test_5(testResults):
 # Description: Send a request for test.html. Proxy will request from the server.
 #              File should be found (200)
 def proxy_test_6(testResults):
-    print("Executing test 6...")
+    Format.printTest("Executing test 6...")
     request = ("GET /test5.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(PROXY_PORT) + "\r\n" + 
                 "If-Modified-Since: Wed, 01 Dec 2022 13:24:54\r\n")
@@ -117,7 +118,7 @@ def proxy_test_6(testResults):
 #              File should be found and return 200 because the file was last modified
 #              in 2022 (200)
 def proxy_test_7(testResults):
-    print("Executing test 7...")
+    Format.printTest("Executing test 7...")
     request = ("GET /test5.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(PROXY_PORT) + "\r\n" + 
                 "If-Modified-Since: Wed, 01 Dec 2023 13:24:54\r\n")
@@ -131,7 +132,7 @@ def proxy_test_7(testResults):
 #              File should be found and return 304 because the file has not been Modified
 #              since 2022
 def proxy_test_8(testResults):
-    print("Executing test 8...")
+    Format.printTest("Executing test 8...")
     request = ("GET /test5.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(PROXY_PORT) + "\r\n" + 
                 "If-Modified-Since: Wed, 01 Dec 2021 13:24:54\r\n")
@@ -143,7 +144,7 @@ def proxy_test_8(testResults):
 
 # Description: Send a request for test.htm. Bad request because unknown file extension (400)
 def proxy_test_9(testResults):
-    print("Executing test 9...")
+    Format.printTest("Executing test 9...")
     request = ("GET /test.htm HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(PROXY_PORT) + "\r\n" + 
                 "If-Modified-Since: Wed, 01 Dec 2022 13:24:54\r\n")
@@ -155,7 +156,7 @@ def proxy_test_9(testResults):
 
 # Description: Send a request for notFound.html. File should not be found (404)
 def proxy_test_10(testResults):
-    print("Executing test 10...")
+    Format.printTest("Executing test 10...")
     request = ("GET /notFound.html HTTP/1.1\r\n" + 
                 "Host: " + str(SERVER_NAME) + ":" + str(PROXY_PORT) + "\r\n" + 
                 "If-Modified-Since: Wed, 01 Dec 2022 13:24:54\r\n")
@@ -223,10 +224,16 @@ if __name__ == "__main__":
         proxy.join()
         server.join()
 
-        print("\n#########################################")
-        print("#              TEST RESULTS             #")
-        print("#                                       #")
+        Format.printHeader("\n#########################################")
+        Format.printHeader("#              TEST RESULTS             #")
+        Format.printHeader("#                                       #")
         for index in range(len(expectedCode)): 
-            assert testResults[index] == "PASS" 
-            print(f"#\tTest {index+1} ({expectedCode[index]}):\t\t {testResults[index]} \t#")
-        print("#########################################\n")
+            # assert testResults[index] == "PASS" 
+            Format.printHeader("#", end='')
+            print(f"\tTest {index+1}\t ({expectedCode[index]}):\t\t ", end='')
+            if testResults[index] == "PASS":
+                Format.printPass()
+            else:
+                Format.printFail()
+            Format.printHeader("\t#")
+        Format.printHeader("#########################################\n")

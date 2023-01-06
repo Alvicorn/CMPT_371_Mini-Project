@@ -10,6 +10,7 @@ import socket
 import os
 import time
 import HTTP
+import Format
 import json
 from datetime import datetime as dt
 
@@ -18,6 +19,7 @@ from datetime import datetime as dt
 ###########
 SERVER_PORT = 12000
 SERVER_NAME = socket.gethostbyname(socket.gethostname())
+SERVER_TIMEOUT = 120 # 1 until timeout
 PROXY_PORT = 12001
 BUFFER_SIZE = 1024
 
@@ -38,7 +40,6 @@ def request_to_server(request):
         clientSocket.send(request.encode())
         serverResponse = clientSocket.recv(BUFFER_SIZE)
         header = serverResponse.decode().split(" ", 20)
-        # print(header)
         # File found in server
         if header[1] == "200":
             t = header[13].split("\n")[0]
@@ -53,7 +54,7 @@ def request_to_server(request):
             clientSocket.close()
             return header[1]
     except socket.error:
-        print("Error: Server is not online")
+        Format.printError("Server is not online")
         return socket.error
 
 # Description: Handle a single client request
@@ -214,21 +215,24 @@ def start_proxy():
 
     # Create TCP welcoming socket
     serverSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    serverSocket.settimeout(SERVER_TIMEOUT)
     serverSocket.bind((ip,PROXY_PORT))
 
     serverSocket.listen(1)
-    print ("The proxy is online...")
+    Format.printText("The proxy is online...")
+    try:
+        while True:
+            # Server waits on accept for incoming requests.
+            # New socket created on return
+            connectionSocket, addr = serverSocket.accept()
+            handle_request(connectionSocket)
+    except socket.error:
+        Format.printWarning("Socket timeout")
     
-    
-    while True:
-        # Server waits on accept for incoming requests.
-        # New socket created on return
-        connectionSocket, addr = serverSocket.accept()
-        handle_request(connectionSocket)
 
 
 
 ##################################
 if __name__ == "__main__":
-    print("Starting Proxy...")
+    Format.printHeader("Starting Proxy...")
     start_proxy()

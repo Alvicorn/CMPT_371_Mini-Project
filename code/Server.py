@@ -10,7 +10,7 @@ import socket
 import os
 from datetime import datetime as dt
 import HTTP
-import time
+import Format
 
 
 
@@ -19,6 +19,7 @@ import time
 ###########
 SERVER_PORT = 12000
 BUFFER_SIZE = 1024
+SERVER_TIMEOUT = 120 # 1 until timeout
 
 
 
@@ -70,11 +71,11 @@ def start_server():
 
     # Create TCP welcoming socket
     serverSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    serverSocket.settimeout(5)
+    serverSocket.settimeout(SERVER_TIMEOUT)
     serverSocket.bind((ip,SERVER_PORT))
 
     serverSocket.listen(1)
-    print ("The server is online...")
+    Format.printText("The server is online...")
     try:
         while True:
             # Server waits on accept for incoming requests.
@@ -82,9 +83,9 @@ def start_server():
             connectionSocket, addr = serverSocket.accept()
             handle_request(connectionSocket)
     except socket.error:
-        print("Socket time out")
+        Format.printWarning("Socket timeout")
     
 ##################################
 if __name__ == "__main__":
-    print("Starting Server...")
+    Format.printHeader("Starting Server...")
     start_server()
