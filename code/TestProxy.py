@@ -226,6 +226,7 @@ if __name__ == "__main__":
         print("\n#########################################")
         print("#              TEST RESULTS             #")
         print("#                                       #")
-        for index in range(len(expectedCode)):  
+        for index in range(len(expectedCode)): 
+            assert testResults[index] == "PASS" 
             print(f"#\tTest {index+1} ({expectedCode[index]}):\t\t {testResults[index]} \t#")
         print("#########################################\n")

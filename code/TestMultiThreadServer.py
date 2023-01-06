@@ -5,6 +5,7 @@
 #
 # Description: Test script for the multi-threaded server
 
+import sys
 from multiprocessing import Process, Manager
 import multiprocessing as mp
 import random
@@ -159,9 +160,13 @@ def run_server():
 
 
 if __name__ == "__main__":
-    numberOfClients = input("Number of clients: ")
+
+    if (len(sys.argv) != 2):
+        print("Invalid arguments:")
+
+    numberOfClients = 0
     try:
-        numberOfClients= int(numberOfClients)
+        numberOfClients= int(sys.argv[1])
     except ValueError:
         print("Input must be a number!")
         exit(1)
@@ -170,7 +175,7 @@ if __name__ == "__main__":
         exit(1)
     else:
         expectedCode = [200, 200, 200, 200, 200, 200, 400, 404] # expected codes for test cases
-        max_runtime = len(expectedCode) * numberOfClients * numberOfClients * 2
+        max_runtime = len(expectedCode) * numberOfClients * numberOfClients
         if numberOfClients == 1:
             max_runtime *= 3
         with Manager() as manager:
@@ -207,6 +212,7 @@ if __name__ == "__main__":
             for index in range(len(expectedCode)):
                 for testResult in range(numberOfClients):
                     s = results[testResult][index]['status']
+                    assert s == "PASS"
                     t = results[testResult][index]['time']
                     print(f"#\tTest {index+1} [Client-{testResult+1}] ({expectedCode[index]}):\t {s}\t[{time.ctime(t)}]\t#")
                 print("#                                                                               #")
