@@ -228,13 +228,4 @@ if __name__ == "__main__":
         print("#                                       #")
         for index in range(len(expectedCode)):  
             print(f"#\tTest {index+1} ({expectedCode[index]}):\t\t {testResults[index]} \t#")
-        # print("#\tTest 1 (200):\t\t" + testResults[0] + "\t#")
-        # print("#\tTest 2 (200):\t\t" + testResults[1] + "\t#")
-        # print("#\tTest 3 (200):\t\t" + testResults[2] + "\t#")
-        # print("#\tTest 4 (200):\t\t" + testResults[3] + "\t#")
-        # print("#\tTest 5 (200):\t\t" + testResults[4] + "\t#")
-        # print("#\tTest 6 (200):\t\t" + testResults[5] + "\t#")
-        # print("#\tTest 7 (400):\t\t" + testResults[6] + "\t#")
-        # print("#\tTest 8 (404):\t\t" + testResults[7] + "\t#")
-        # print("#\tTest 8 (304):\t\t" + testResults[8] + "\t#")
         print("#########################################\n")

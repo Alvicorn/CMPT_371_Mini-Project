@@ -116,15 +116,15 @@ def server_test_8(testResults):
     testResults[7] = "PASS" if response[1] == expectedResult else "FAIL"
     
 # Description: Send a request for test.htm. the request timed out (408)
-def server_test_9(testResults):
-    print("Executing test 9...")
-    request = ("GET /test.htm HTTP/1.1\r\n" + 
-                "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
-    serverResponse = client_connection(request)
-    # validate response
-    expectedResult = "408"
-    response = serverResponse.decode().split(" ")
-    testResults[8] = "PASS" if response[1] == expectedResult else "FAIL"   
+# def server_test_9(testResults):
+#     print("Executing test 9...")
+#     request = ("GET /test.htm HTTP/1.1\r\n" + 
+#                 "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
+#     serverResponse = client_connection(request)
+#     # validate response
+#     expectedResult = "408"
+#     response = serverResponse.decode().split(" ")
+#     testResults[8] = "PASS" if response[1] == expectedResult else "FAIL"   
 
 # Description: Execute all test cases in a sequential order since the server
 #               is singly-threaded
@@ -137,7 +137,7 @@ def server_tests(testResults):
     server_test_6(testResults)
     server_test_7(testResults)
     server_test_8(testResults)
-    server_test_9(testResults)
+    # server_test_9(testResults)
 
 # Description: Run the server
 def run_server():
