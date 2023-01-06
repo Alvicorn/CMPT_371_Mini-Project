@@ -8,10 +8,9 @@
 # from socket import *
 import socket
 import os
-import time
 from datetime import datetime as dt
 import HTTP
-import sys
+import time
 
 
 
@@ -31,7 +30,6 @@ BUFFER_SIZE = 1024
 def handle_request(connectionSocket):
     request = connectionSocket.recv(BUFFER_SIZE).decode()  
     requestWords = request.split(" ")[0:3]
-    # print(request + "\n")
 
     if len(requestWords) > 1:
 
@@ -72,18 +70,19 @@ def start_server():
 
     # Create TCP welcoming socket
     serverSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    serverSocket.settimeout(5)
     serverSocket.bind((ip,SERVER_PORT))
 
     serverSocket.listen(1)
     print ("The server is online...")
-    
-    
-    while True:
-        # Server waits on accept for incoming requests.
-        # New socket created on return
-        connectionSocket, addr = serverSocket.accept()
-        handle_request(connectionSocket)
-
+    try:
+        while True:
+            # Server waits on accept for incoming requests.
+            # New socket created on return
+            connectionSocket, addr = serverSocket.accept()
+            handle_request(connectionSocket)
+    except socket.error:
+        print("Socket time out")
     
 ##################################
 if __name__ == "__main__":

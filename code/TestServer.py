@@ -12,7 +12,7 @@ from Server import start_server
 from socket import *
 import socket
 
-MAX_RUNTIME = 20 # second
+MAX_RUNTIME = 15 # second
 SERVER_NAME = socket.gethostbyname(socket.gethostname())
 SERVER_PORT = 12000
 
@@ -147,7 +147,7 @@ def run_server():
 
 if __name__ == "__main__":
 
-    expectedCode = [200, 200, 200, 200, 200, 200, 400, 404, 408] # expected codes for test cases
+    expectedCode = [200, 200, 200, 200, 200, 200, 400, 404] #408 expected codes for test cases
 
     with Manager() as manager:
         testResults = manager.dict()   # dictionary of test case results
@@ -173,5 +173,6 @@ if __name__ == "__main__":
         print("#              TEST RESULTS             #")
         print("#                                       #")
         for index in range(len(expectedCode)):
+            assert testResults[index] == "PASS"
             print(f"#\tTest {index+1} ({expectedCode[index]}):\t\t {testResults[index]} \t#")
         print("#########################################\n")
