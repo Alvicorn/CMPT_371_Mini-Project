@@ -8,6 +8,7 @@
 
 import socket
 import os
+import sys
 import HTTP
 import threading
 import Format
@@ -65,7 +66,11 @@ def start_server():
 
     # Create TCP welcoming socket
     serverSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    serverSocket.settimeout(SERVER_TIMEOUT)
+    if (len(sys.argv) == 2):
+        if (sys.argv[1] == "-build"):
+                serverSocket.settimeout(5)
+    else:            
+        serverSocket.settimeout(SERVER_TIMEOUT)
     serverSocket.bind((ip,SERVER_PORT))
 
     serverSocket.listen(1)
