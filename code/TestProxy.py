@@ -18,7 +18,9 @@ import Format
 
 MAX_RUNTIME = 20 # second
 SERVER_NAME = socket.gethostbyname(socket.gethostname())
-PROXY_PORT = 12001
+
+SERVER_PORT = 12003
+PROXY_PORT = 12002
 
 test1Result = "FAIL"
 
@@ -184,10 +186,10 @@ def proxy_tests(testResults):
 
 # Description: Run the server
 def run_server():
-    start_server()
+    start_server(port=SERVER_PORT)
 
 def run_proxy():
-    start_proxy()
+    start_proxy(serverPort=SERVER_PORT, proxyPort=PROXY_PORT)
 
 if __name__ == "__main__":
 

@@ -67,13 +67,12 @@ def handle_request(connectionSocket):
 
 
 # Description: Create the socket and listen for connections
-def start_server():
+def start_server(port=SERVER_PORT):
 
     ip = socket.gethostbyname(socket.gethostname())
 
     # Create TCP welcoming socket
     serverSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    port = SERVER_PORT
     timeout = SERVER_TIMEOUT
 
     if (len(sys.argv) > 1):
@@ -92,9 +91,9 @@ def start_server():
                 exit(1)
     
     serverSocket.settimeout(timeout)
+    
     socketFound = False
     socketCount = 0
-
     while (socketCount < SOCKETS and not socketFound):
         try:
             serverSocket.bind((ip, port))
@@ -103,7 +102,10 @@ def start_server():
             Format.printError(f"{port} port is in use")
             socketCount += 1
             port = random.randint(1, SOCKETS) 
-
+    
+    if not socketFound:
+        Format.printError("No ports available")
+        exit(1)
             
 
     serverSocket.listen(1)
@@ -116,8 +118,6 @@ def start_server():
             handle_request(connectionSocket)
     except socket.error:
         Format.printWarning("Socket timeout")
-
-
 
 
 

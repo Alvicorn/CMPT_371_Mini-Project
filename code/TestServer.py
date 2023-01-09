@@ -143,7 +143,7 @@ def server_tests(testResults):
 # Description: Run the server
 def run_server():
     start_server()
-
+    # run_server(socket)
 
 
 if __name__ == "__main__":

@@ -211,14 +211,12 @@ def handle_request(connectionSocket, serverPort):
     connectionSocket.close()
 
 # Description: Create the socket and listen for connections
-def start_proxy():
+def start_proxy(serverPort=SERVER_PORT, proxyPort=PROXY_PORT):
 
     ip = socket.gethostbyname(socket.gethostname())
 
     # Create TCP welcoming socket
     serverSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    serverPort = SERVER_PORT
-    proxyPort = PROXY_PORT
     timeout = TIMEOUT
     
 
