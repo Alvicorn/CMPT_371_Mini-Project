@@ -16,10 +16,10 @@ jobs:
       - image: "circleci/python:3.6.4"
     steps:
       - checkout
-      # - run: python3 code/TestServer.py
-      - run: python3 code/TestProxy.py
-      - run: python3 code/TestMultiThreadServer.py 1
-      - run: python3 code/TestMultiThreadServer.py 3
+      - run: python3 code/TestServer.py -build
+      - run: python3 code/TestProxy.py -build
+      - run: python3 code/TestMultiThreadServer.py -build 1
+      - run: python3 code/TestMultiThreadServer.py -build 3
 
 workflows:
   build_and_test:

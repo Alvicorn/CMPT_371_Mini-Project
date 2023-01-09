@@ -9,6 +9,7 @@
 import socket
 import os
 import sys
+import random
 from datetime import datetime as dt
 import HTTP
 import Format
@@ -21,7 +22,7 @@ import Format
 SERVER_PORT = 12000
 BUFFER_SIZE = 1024
 SERVER_TIMEOUT = 120 # 1 until timeout
-
+SOCKETS = 65535
 
 
 #############
@@ -72,15 +73,41 @@ def start_server():
 
     # Create TCP welcoming socket
     serverSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    if (len(sys.argv) == 2):
-        if (sys.argv[1] == "-build"):
-                serverSocket.settimeout(5)
-    else:            
-        serverSocket.settimeout(SERVER_TIMEOUT)
-    serverSocket.bind((ip,SERVER_PORT))
+    port = SERVER_PORT
+    timeout = SERVER_TIMEOUT
+
+    if (len(sys.argv) > 1):
+        for arg in sys.argv[1:]:
+            arg = arg.split('=')
+            if (arg[0] == "-build"):
+                timeout = 5
+            elif (arg[0] == "-port"):
+                try:
+                    port = int(arg[1])
+                except ValueError:
+                    Format.printError("Port number must be an integer")
+                    port = SERVER_PORT
+            else:
+                Format.printError("Illegal argument")
+                exit(1)
+    
+    serverSocket.settimeout(timeout)
+    socketFound = False
+    socketCount = 0
+
+    while (socketCount < SOCKETS and not socketFound):
+        try:
+            serverSocket.bind((ip, port))
+            socketFound = True
+        except OSError:
+            Format.printError(f"{port} port is in use")
+            socketCount += 1
+            port = random.randint(1, SOCKETS) 
+
+            
 
     serverSocket.listen(1)
-    Format.printText("The server is online...")
+    Format.printText(f"The server is online on port {port}...")
     try:
         while True:
             # Server waits on accept for incoming requests.
@@ -89,7 +116,13 @@ def start_server():
             handle_request(connectionSocket)
     except socket.error:
         Format.printWarning("Socket timeout")
-    
+
+
+
+
+
+
+
 ##################################
 if __name__ == "__main__":
     Format.printHeader("Starting Server...")
