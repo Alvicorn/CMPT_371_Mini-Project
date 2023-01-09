@@ -79,7 +79,7 @@ def start_server(port=SERVER_PORT):
         for arg in sys.argv[1:]:
             arg = arg.split('=')
             if (arg[0] == "-build"):
-                timeout = 5
+                timeout = 10
             elif (arg[0] == "-port"):
                 try:
                     port = int(arg[1])

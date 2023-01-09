@@ -224,7 +224,7 @@ def start_proxy(serverPort=SERVER_PORT, proxyPort=PROXY_PORT):
         for arg in sys.argv[1:]:
             arg = arg.split('=')
             if (arg[0] == "-build"):
-                timeout = 5
+                timeout = 10
             elif (arg[0] == "-server-port"):
                 try:
                     serverPort = int(arg[1])
