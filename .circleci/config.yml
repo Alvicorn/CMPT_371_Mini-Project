@@ -32,6 +32,4 @@ workflows:
       - test_server:
           requires:
             - build
-      - test_proxy:
-        requires:
-            - build
+      - test_proxy
