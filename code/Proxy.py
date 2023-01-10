@@ -8,21 +8,25 @@
 
 import socket
 import os
+import sys
 import time
 import HTTP
+import Format
 import json
 from datetime import datetime as dt
+import random
 
 ###########
 # GLOBALS #
 ###########
 SERVER_PORT = 12000
 SERVER_NAME = socket.gethostbyname(socket.gethostname())
+TIMEOUT = 120 # 1 until timeout
 PROXY_PORT = 12001
 BUFFER_SIZE = 1024
 
 CACHE_SIZE = 5
-
+SOCKETS = 65535
 
 #############
 # FUNCTIONS #
@@ -30,15 +34,14 @@ CACHE_SIZE = 5
 
 # Description: Create a connection with the server. Send the request and 
 #               return the server response
-def request_to_server(request):
+def request_to_server(request, serverPort):
     # establish TCP connection to the server
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        clientSocket.connect((SERVER_NAME,SERVER_PORT))
+        clientSocket.connect((SERVER_NAME,serverPort))
         clientSocket.send(request.encode())
         serverResponse = clientSocket.recv(BUFFER_SIZE)
         header = serverResponse.decode().split(" ", 20)
-        # print(header)
         # File found in server
         if header[1] == "200":
             t = header[13].split("\n")[0]
@@ -53,11 +56,11 @@ def request_to_server(request):
             clientSocket.close()
             return header[1]
     except socket.error:
-        print("Error: Server is not online")
+        Format.printError("Server is not online")
         return socket.error
 
 # Description: Handle a single client request
-def handle_request(connectionSocket):
+def handle_request(connectionSocket, serverPort):
     # load cache information
     cacheCount = 0
     cacheList = []
@@ -106,8 +109,8 @@ def handle_request(connectionSocket):
                 # cache is empty
                 if cacheCount < 1:
                     request = ("GET /"+ filePath + " HTTP/1.1\r\n" + 
-                                "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
-                    serverResponse = request_to_server(request)
+                                "Host: " + str(SERVER_NAME) + ":" + str(serverPort) + "\r\n")
+                    serverResponse = request_to_server(request, serverPort)
                     if serverResponse != socket.error:
                         if serverResponse == "404":
                                 HTTP.respond_404(connectionSocket)
@@ -170,8 +173,8 @@ def handle_request(connectionSocket):
                     # file is not found in cache, make a request to the server
                     else:
                         request = ("GET /"+ filePath + " HTTP/1.1\r\n" + 
-                                     "Host: " + str(SERVER_NAME) + ":" + str(SERVER_PORT) + "\r\n")
-                        serverResponse = request_to_server(request)
+                                     "Host: " + str(SERVER_NAME) + ":" + str(serverPort) + "\r\n")
+                        serverResponse = request_to_server(request, serverPort)
                         if serverResponse != socket.error:
                             if serverResponse == "404":
                                 HTTP.respond_404(connectionSocket)
@@ -208,27 +211,65 @@ def handle_request(connectionSocket):
     connectionSocket.close()
 
 # Description: Create the socket and listen for connections
-def start_proxy():
+def start_proxy(serverPort=SERVER_PORT, proxyPort=PROXY_PORT):
 
     ip = socket.gethostbyname(socket.gethostname())
 
     # Create TCP welcoming socket
     serverSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    serverSocket.bind((ip,PROXY_PORT))
+    timeout = TIMEOUT
+    
+
+    if (len(sys.argv) > 1):
+        for arg in sys.argv[1:]:
+            arg = arg.split('=')
+            if (arg[0] == "-build"):
+                timeout = 10
+            elif (arg[0] == "-server-port"):
+                try:
+                    serverPort = int(arg[1])
+                except ValueError:
+                    Format.printError("Server port number must be an integer")
+                    serverPort = SERVER_PORT
+            elif (arg[0] == "-proxy-port"):
+                try:
+                    proxyPort = int(arg[1])
+                except ValueError:
+                    Format.printError("Proxy port number must be an integer")
+                    proxyPort = PROXY_PORT
+            else:
+                Format.printError("Illegal argument")
+                exit(1)
+    
+    serverSocket.settimeout(timeout)
+    socketFound = False
+    socketCount = 0
+
+    while (socketCount < SOCKETS and not socketFound):
+        try:
+            serverSocket.bind((ip, proxyPort))
+            socketFound = True
+        except OSError:
+            Format.printError(f"{proxyPort} port is in use")
+            socketCount += 1
+            proxyPort = random.randint(1, SOCKETS) 
+
 
     serverSocket.listen(1)
-    print ("The proxy is online...")
+    Format.printText("The proxy is online...")
+    try:
+        while True:
+            # Server waits on accept for incoming requests.
+            # New socket created on return
+            connectionSocket, addr = serverSocket.accept()
+            handle_request(connectionSocket, serverPort)
+    except socket.error:
+        Format.printWarning("Socket timeout")
     
-    
-    while True:
-        # Server waits on accept for incoming requests.
-        # New socket created on return
-        connectionSocket, addr = serverSocket.accept()
-        handle_request(connectionSocket)
 
 
 
 ##################################
 if __name__ == "__main__":
-    print("Starting Proxy...")
+    Format.printHeader("Starting Proxy...")
     start_proxy()

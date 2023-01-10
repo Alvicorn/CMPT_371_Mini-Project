@@ -8,17 +8,21 @@
 
 import socket
 import os
+import sys
 import HTTP
 import threading
+import random
+import Format
 
 
 
 ###########
 # GLOBALS #
 ###########
-SERVER_PORT = 12002
+SERVER_PORT = 12004
 BUFFER_SIZE = 1024
-
+SERVER_TIMEOUT = 120 # 1 until timeout
+SOCKETS = 65535
 
 
 #############
@@ -64,20 +68,51 @@ def start_server():
 
     # Create TCP welcoming socket
     serverSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    serverSocket.bind((ip,SERVER_PORT))
+    port = SERVER_PORT
+    timeout = SERVER_TIMEOUT
+    if (len(sys.argv) > 1):
+        for arg in sys.argv[1:]:
+            arg = arg.split('=')
+            if (arg[0] == "-build"):
+                timeout = 10
+            elif (arg[0] == "-port"):
+                try:
+                    port = int(arg[1])
+                except ValueError:
+                    Format.printError("Port number must be an integer")
+                    port = SERVER_PORT
+            elif (not isinstance(int(arg[0]), int)):
+                Format.printError("Illegal argument")
+                exit(1)
+    
+    serverSocket.settimeout(timeout)
+    socketFound = False
+    socketCount = 0
+
+    while (socketCount < SOCKETS and not socketFound):
+        try:
+            serverSocket.bind((ip, port))
+            socketFound = True
+        except OSError:
+            Format.printError(f"{port} port is in use")
+            socketCount += 1
+            port = random.randint(1, SOCKETS) 
+
+            
 
     serverSocket.listen(1)
-    print ("The server is online...")
+    Format.printText(f"The server is online on port {port}...")
     
-    
-    while True:
-        # Server waits on accept for incoming requests.
-        # New socket created on return
-        connectionSocket, addr = serverSocket.accept()
-        thread = threading.Thread(target=handle_request, args=(connectionSocket, ))
-        thread.start()
-    
+    try:
+        while True:
+            # Server waits on accept for incoming requests.
+            # New socket created on return
+            connectionSocket, addr = serverSocket.accept()
+            thread = threading.Thread(target=handle_request, args=(connectionSocket, ))
+            thread.start()
+    except socket.error:
+        Format.printWarning("Socket timeout")
 ##################################
 if __name__ == "__main__":
-    print("Starting Server...")
+    Format.printHeader("Starting Server...")
     start_server()

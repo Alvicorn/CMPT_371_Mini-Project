@@ -8,9 +8,11 @@
 # from socket import *
 import socket
 import os
+import sys
+import random
 from datetime import datetime as dt
 import HTTP
-import time
+import Format
 
 
 
@@ -19,7 +21,8 @@ import time
 ###########
 SERVER_PORT = 12000
 BUFFER_SIZE = 1024
-
+SERVER_TIMEOUT = 120 # 1 until timeout
+SOCKETS = 65535
 
 
 #############
@@ -64,17 +67,49 @@ def handle_request(connectionSocket):
 
 
 # Description: Create the socket and listen for connections
-def start_server():
+def start_server(port=SERVER_PORT):
 
     ip = socket.gethostbyname(socket.gethostname())
 
     # Create TCP welcoming socket
     serverSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    serverSocket.settimeout(5)
-    serverSocket.bind((ip,SERVER_PORT))
+    timeout = SERVER_TIMEOUT
+
+    if (len(sys.argv) > 1):
+        for arg in sys.argv[1:]:
+            arg = arg.split('=')
+            if (arg[0] == "-build"):
+                timeout = 10
+            elif (arg[0] == "-port"):
+                try:
+                    port = int(arg[1])
+                except ValueError:
+                    Format.printError("Port number must be an integer")
+                    port = SERVER_PORT
+            else:
+                Format.printError("Illegal argument")
+                exit(1)
+    
+    serverSocket.settimeout(timeout)
+    
+    socketFound = False
+    socketCount = 0
+    while (socketCount < SOCKETS and not socketFound):
+        try:
+            serverSocket.bind((ip, port))
+            socketFound = True
+        except OSError:
+            Format.printError(f"{port} port is in use")
+            socketCount += 1
+            port = random.randint(1, SOCKETS) 
+    
+    if not socketFound:
+        Format.printError("No ports available")
+        exit(1)
+            
 
     serverSocket.listen(1)
-    print ("The server is online...")
+    Format.printText(f"The server is online on port {port}...")
     try:
         while True:
             # Server waits on accept for incoming requests.
@@ -82,9 +117,13 @@ def start_server():
             connectionSocket, addr = serverSocket.accept()
             handle_request(connectionSocket)
     except socket.error:
-        print("Socket time out")
-    
+        Format.printWarning("Socket timeout")
+
+
+
+
+
 ##################################
 if __name__ == "__main__":
-    print("Starting Server...")
+    Format.printHeader("Starting Server...")
     start_server()

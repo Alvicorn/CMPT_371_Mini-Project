@@ -169,7 +169,9 @@ Code | Message           | Done |
 ### <u>Testing</u>
 When testing in the browser, ensure the server is running on port 12002
 
-When testing with ```TestMultiThreadServer.py```, ensure port 12002 is available. This test may take a while. At the beginning of the program, the tester will input the number of clients to test
+When testing with ```TestMultiThreadServer.py```, ensure port 12002 is available. This test may take a while. The script takes 1 argument; the number of clients to simulate.
+
+Using CircleCI, the the three tests will run and be validated.
 
 #### <mark>200</mark>
 Type the following into a web browser
