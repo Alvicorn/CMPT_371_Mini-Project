@@ -66,7 +66,7 @@ workflows:
       - test_proxy:
           requires:
             - build_proxy
-      - test_multithread_server_1_users:
+      - test_multithread_server_1_user:
           requires:
             - build_multithread_server
       - test_multithread_server_3_users:
