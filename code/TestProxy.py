@@ -19,7 +19,7 @@ import Format
 MAX_RUNTIME = 20 # second
 SERVER_NAME = socket.gethostbyname(socket.gethostname())
 
-SERVER_PORT = 12003
+SERVER_PORT = 12000
 PROXY_PORT = 12002
 
 test1Result = "FAIL"
