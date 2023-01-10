@@ -19,7 +19,7 @@ import Format
 ###########
 # GLOBALS #
 ###########
-SERVER_PORT = 12004
+SERVER_PORT = 12002
 BUFFER_SIZE = 1024
 SERVER_TIMEOUT = 120 # 1 until timeout
 SOCKETS = 65535
