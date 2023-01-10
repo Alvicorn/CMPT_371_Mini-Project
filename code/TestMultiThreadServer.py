@@ -17,7 +17,7 @@ import Format
 
 
 SERVER_NAME = socket.gethostbyname(socket.gethostname())
-SERVER_PORT = 12004
+SERVER_PORT = 12002
 
 
 
