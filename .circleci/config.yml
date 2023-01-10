@@ -1,15 +1,22 @@
 version: 2.1
 
 jobs:
-  build:
+
+  build_server:
     working_directory: ~/circleci-python
     docker:
       - image: "circleci/python:3.6.4"
     steps:
       - checkout
-      - run: python3 code/Server.py -build
+      - run: python3 code/Server.py -build  
+  build_proxy:
+    working_directory: ~/circleci-python
+    docker:
+      - image: "circleci/python:3.6.4"
+    steps:
+      - checkout
       - run: python3 code/Proxy.py -build
-      - run: python3 code/MultiThreadServer.py -build
+      # - run: python3 code/MultiThreadServer.py -build
   test_server:
     working_directory: ~/circleci-python
     docker:
@@ -28,8 +35,11 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - build
+      - build_server
+      - build_proxy
       - test_server:
           requires:
-            - build
-      - test_proxy
+            - build_server
+      - test_proxy:
+          requires:
+            - build_proxy
